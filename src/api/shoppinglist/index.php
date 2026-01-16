@@ -1,0 +1,3 @@
+<?php
+
+// Handleliste-endepunkter

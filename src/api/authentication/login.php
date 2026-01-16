@@ -1,0 +1,3 @@
+<?php
+
+// Bruker-endepunkter / innlogging
