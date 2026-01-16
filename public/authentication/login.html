@@ -1,11 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handlelister</title>
+    <title>Logg inn</title>
 </head>
 <body>
-    <!-- TODO: innlogging -->
+    <!-- TODO: registrering av bruker -->
+    <form id="login-form" action="/src/api/authentication/login.php" method="post">
+        <label>
+            E-post
+            <input type="email" required name="email">
+        </label>
+        <label>
+            Passord
+            <input type="password" required name="password" autocomplete="current-password">
+        </label>
+        <button type="submit">Logg inn</button>
+    </form>
+    <script>
+        const loginForm = document.getElementById('login-form')
+
+        loginForm.addEventListener('submit', event => {
+            event.preventDefault()
+
+            const form = event.target
+            const url = form.action
+            const method = form.method
+
+            const formData = new FormData(form)
+            const filteredFormData = Object.fromEntries([...formData].filter(([key, value]) => value !== ''))
+            const body = JSON.stringify(filteredFormData)
+
+            const headers = {
+                'Content-Type': 'application/json'
+            }
+
+            fetch(url, {
+                method,
+                body,
+                headers,
+            })
+        })
+    </script>
 </body>
 </html>
