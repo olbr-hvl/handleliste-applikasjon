@@ -23,7 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit(json_encode(['success' => false, 'error' => 'Ugyldig e-postadresse.']));
     }
 
-    // TODO: Confirm strength of password.
+    if (strlen($password) < 16) {
+        http_response_code(400);
+        exit(json_encode(['success' => false, 'error' => 'Passordet er for svakt, passordet må bestå av minst 16 tegn.']));
+    }
 
     // Create account
 
@@ -31,21 +34,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $db = new PDO(PDO_DSN);
 
-    try {
-        $statement = $db->prepare(<<<SQL
-            INSERT INTO account (email, hashed_password)
-            VALUES (?, ?);
-        SQL);
-        $statement->execute([$email, $hashedPassword]);
-    } catch (PDOException $exception) {
-        $errorCode = $exception->getCode();
-
-        if ($errorCode === '23000') {
-            exit(json_encode(['success' => false, 'error' => 'Det finnes allerede en konto for denne emailen.']));
-        }
-
-        throw $exception;
-    }
+    $statement = $db->prepare(<<<SQL
+        INSERT INTO account (email, hashed_password)
+        VALUES (?, ?);
+    SQL);
+    $statement->execute([$email, $hashedPassword]);
 
     // Sign in to account
 
@@ -53,7 +46,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     session_start();
 
-    $_SESSION['account'] = [
-        'id' => $accountId
-    ];
+    if ($accountId !== '0') {
+        $_SESSION['account'] = [
+            'id' => $accountId
+        ];
+    }
 }

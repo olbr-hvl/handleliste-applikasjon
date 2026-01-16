@@ -43,7 +43,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit(json_encode(['success' => false, 'error' => 'Feil email eller passord.']));
     }
 
-    // TODO: use password_needs_rehash to check if the stored hash uses an old algorithm/options; if true update the stored hash
+    // Rehash password if current hash uses an old algorithm/options
+
+    if (password_needs_rehash($hashedPassword, PASSWORD_DEFAULT)) {
+        $newHashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $statement = $db->prepare(<<<SQL
+            UPDATE account
+            SET hashed_password = ?
+            WHERE id = ?;
+        SQL);
+        $statement->execute([$newHashedPassword, $accountId]);
+    }
 
     // Sign in to account
 

@@ -11,3 +11,4 @@ Jeg valgte å sette opp denne handlings loggen for å begrunne eventuelle valg o
 
 Jeg begynte så på å sette opp registrering og pålogging av bruker tidligere en planlagt fordi jeg trodde det var best å starte med det tidlig siden jeg innså i etterkant av planleggingen at jeg kanskje hadde beregnt for liten tid til det.
 Etter at jeg satt opp den funksjonelle delen av endepunkter og sider for registrering av bruker og innlogging hadde jeg fortsatt rikelig av tid igjen som jeg hadde planlagt å bruke til dette.
+Jeg hoppet over noen steg i sikkerheten når jeg først satt det opp så valgte å bruke litt tid på å forbedre dette, sette inn en sjekk for hvor sterkt passord personen lager, oppdatere hash som bruker gamle algoritmer, gi samme melding om personen prøver å registrere en ny bruker med en email som allerede er knyttet til en bruker eller ikke slik at ekistensen av brukeren ikke blir lekket.
