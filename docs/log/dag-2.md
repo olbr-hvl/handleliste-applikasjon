@@ -2,3 +2,6 @@
 
 8:00 - 8:50
 Sette opp fil og mappestruktur
+
+8:50 - 9:20
+Sette opp databasestruktur
