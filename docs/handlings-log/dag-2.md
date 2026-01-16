@@ -22,3 +22,10 @@ Når jeg satt opp endepunktene for handlelister så på sletting og endring av h
 Jeg har ikke lagt inn noen eksplisitt sjekk for om denne situasjonen oppstår og tenker at det ikke er så farlig siden de ville bare ha fått en "success" respons selv om ingen ting skjedde.
 Eventuelt kunne en sjekk bli lagt til i koden for å istedenfor gi en feilrespons med HTTP status kode 403.
 Status kode 404 kunne også bli brukt for å gjemme eksistensen av en handleliste på den spesifikke id-en, men dette er ikke så nøye i denne situasjonen fordi id-ene til handlelistene er sekvensielle og det er trivielt å gjette seg til en ekte id.
+
+Jeg oppdaget at jeg var litt snar med fiksen min for problemet med at eksistensen av brukere kan bli lekket i registrering av bruker endepunktet som jeg holdt på med rett før lunsj.
+Jeg tok vekk feilhåndteringen av `UNIQUE`-konflikter i SQL-spørringen, men dette ville fortsatt lekke eksistensen fordi det vil forårsake en exception i koden.
+Jeg gjorde om `INSERT`-spørringen til `INSERT OR IGNORE` for å ignorere konflikter og late som om brukeren fortsatt ble registrert.
+Jeg valgte en `INSERT OR IGNORE` ovenfor å legge til `ON CONFLICT IGNORE` på kolonnen i tabellen fordi denne konflikten vil jeg spesifikt ignorere på dette endepunktet og jeg vet ikke om det kan være andre situasjoner der jeg ikke vil ignorere konflikten i fremtiden.
+Jeg tok også vekk automatisk innlogging etter at brukeren ble opprettet fordi dette vil også lekke eksistensen av brukeren.
+Dersom dette ikke hadde blitt gjort kunne noen registrert og dersom de ble innlogget automatisk ville de visst at det ikke var en bruker fra før og dersom de ble logget inn automatisk ville de visst at brukeren eksisterte fra før.

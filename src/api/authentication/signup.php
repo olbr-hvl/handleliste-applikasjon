@@ -35,20 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $db = new PDO(PDO_DSN);
 
     $statement = $db->prepare(<<<SQL
-        INSERT INTO account (email, hashed_password)
+        INSERT OR IGNORE INTO account (email, hashed_password)
         VALUES (?, ?);
     SQL);
     $statement->execute([$email, $hashedPassword]);
-
-    // Sign in to account
-
-    $accountId = $db->lastInsertId();
-
-    session_start();
-
-    if ($accountId !== '0') {
-        $_SESSION['account'] = [
-            'id' => $accountId
-        ];
-    }
 }

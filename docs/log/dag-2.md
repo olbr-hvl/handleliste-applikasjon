@@ -29,3 +29,6 @@ Gå hjem til hjemmekontor, finne meg mat og gjøre meg klar til å fortsette på
 
 14:00 - 14:30
 Ferdiggjøre handleliste-endepunktene
+
+14:30 - 14:50
+Fikse litt på forbedrelsen av funksjonaliteten til registrering av bruker og innlogging som jeg holdt på med før lunsj.
