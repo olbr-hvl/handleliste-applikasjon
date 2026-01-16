@@ -6,6 +6,117 @@
     <title>Handlelister</title>
 </head>
 <body>
-    <!-- TODO: startside / oversikt over handlelister -->
+    <ul id="shopping-lists-ul"></ul>
+    <button type="button" id="new-shopping-list-button">Ny handleliste</button>
+    <dialog closedby="any" id="new-shopping-list-dialog">
+        <form id="new-shopping-list-form" action="/src/api/shoppinglist/index.php" method="post">
+            <label>
+                Handleliste navn
+                <input type="text" required name="name">
+            </label>
+            <button type="button" class="dialog-close-button">Avbryt</button>
+            <button type="submit">Opprett ny handleliste</button>
+        </form>
+    </dialog>
+    <script>
+        const shoppinglistsUl = document.getElementById('shopping-lists-ul')
+        const newShoppingListButton = document.getElementById('new-shopping-list-button')
+        const newShoppingListDialog = document.getElementById('new-shopping-list-dialog')
+        const newShoppingListForm = document.getElementById('new-shopping-list-form')
+
+        newShoppingListButton.addEventListener('click', () => {
+            newShoppingListDialog.showModal()
+        })
+
+        newShoppingListForm.addEventListener('submit', async event => {
+            event.preventDefault()
+
+            const form = event.target
+            const url = form.action
+            const method = form.method
+
+            const formData = new FormData(form)
+            const filteredFormData = Object.fromEntries([...formData].filter(([key, value]) => value !== ''))
+            const body = JSON.stringify(filteredFormData)
+
+            const headers = {
+                'Content-Type': 'application/json'
+            }
+
+            const response = await fetch(url, {
+                method,
+                body,
+                headers,
+            })
+
+            const result = await response.json()
+
+            if (result.success) {
+                form.closest('dialog')?.close()
+
+                addShoppinglistToUI({
+                    id: result.data.id,
+                    name: filteredFormData.name,
+                })
+            }
+        })
+
+        const dialogCloseButtons = document.querySelectorAll('.dialog-close-button')
+
+        dialogCloseButtons.forEach(dialogCloseButton => {
+            dialogCloseButton.addEventListener('click', () => {
+                const dialog = dialogCloseButton.closest('dialog')
+
+                dialog.close()
+            })
+        })
+
+        function addShoppinglistToUI(shoppinglist) {
+            const li = document.createElement('li')
+            li.textContent = shoppinglist.name
+
+            const deleteButton = document.createElement('button')
+            deleteButton.type = 'button'
+            deleteButton.textContent = 'X'
+            deleteButton.ariaLabel = 'slett handleliste'
+
+            deleteButton.addEventListener('click', async () => {
+                const searchParams = new URLSearchParams({
+                    id: shoppinglist.id
+                })
+
+                const response = await fetch(`/src/api/shoppinglist/index.php?${searchParams}`, {
+                    method: 'DELETE'
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                    li.remove()
+                }
+            })
+
+            li.append(deleteButton)
+            shoppinglistsUl.append(li)
+        }
+
+        fetch('/src/api/shoppinglist/index.php')
+            .then(response => Promise.all([response.status, response.json()]))
+            .then(([status, result]) => {
+                if (result.success === false && status === 401) {
+                    // not logged in
+                    return
+                }
+
+                const shoppinglists = result.data
+
+                if (shoppinglists.length === 0) {
+
+                    return
+                }
+
+                shoppinglists.forEach(addShoppinglistToUI)
+            })
+    </script>
 </body>
 </html>

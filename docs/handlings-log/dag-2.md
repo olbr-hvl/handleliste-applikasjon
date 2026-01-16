@@ -29,3 +29,6 @@ Jeg gjorde om `INSERT`-spørringen til `INSERT OR IGNORE` for å ignorere konfli
 Jeg valgte en `INSERT OR IGNORE` ovenfor å legge til `ON CONFLICT IGNORE` på kolonnen i tabellen fordi denne konflikten vil jeg spesifikt ignorere på dette endepunktet og jeg vet ikke om det kan være andre situasjoner der jeg ikke vil ignorere konflikten i fremtiden.
 Jeg tok også vekk automatisk innlogging etter at brukeren ble opprettet fordi dette vil også lekke eksistensen av brukeren.
 Dersom dette ikke hadde blitt gjort kunne noen registrert og dersom de ble innlogget automatisk ville de visst at det ikke var en bruker fra før og dersom de ble logget inn automatisk ville de visst at brukeren eksisterte fra før.
+
+Jeg startet å sette opp brukergrensesnittet for oversikt over handlelister, så langt dersom man er innlogget kan man opprette nye handlelister og slette handlelister.
+Etter planen så gjenstår det da å håndtere hva som skal vises dersom du ikke er logget inn og kunne endre navnet på handlelister.

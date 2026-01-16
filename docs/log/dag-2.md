@@ -32,3 +32,9 @@ Ferdiggjøre handleliste-endepunktene
 
 14:30 - 14:50
 Fikse litt på forbedrelsen av funksjonaliteten til registrering av bruker og innlogging som jeg holdt på med før lunsj.
+
+14:50 - 15:05
+Pause
+
+15:05 - 16:30
+Starte å sette opp brukergrensesnittet for oversikt over handlelister
