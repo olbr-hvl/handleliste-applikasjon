@@ -37,6 +37,7 @@
                 <button type="submit">Logg inn</button>
             </form>
         </dialog>
+        <button type="button" id="signout-button">Logg ut</button>
     </header>
     <main>
         <ul id="shopping-lists-ul"></ul>
@@ -57,6 +58,7 @@
         const newShoppingListButton = document.getElementById('new-shopping-list-button')
         const signupButton = document.getElementById('signup-button')
         const loginButton = document.getElementById('login-button')
+        const signoutButton = document.getElementById('signout-button')
         const newShoppingListForm = document.getElementById('new-shopping-list-form')
         const signupForm = document.getElementById('signup-form')
         const loginForm = document.getElementById('login-form')
@@ -95,12 +97,15 @@
             newShoppingListButton.hidden = false
             signupButton.hidden = true
             loginButton.hidden = true
+            signoutButton.hidden = false
         }
 
         function handleNotLoggedIn() {
             newShoppingListButton.hidden = true
             signupButton.hidden = false
             loginButton.hidden = false
+            signoutButton.hidden = true
+            shoppinglistsUl.innerHTML = '';
         }
 
         function addShoppinglistToUI(shoppinglist) {
@@ -136,13 +141,12 @@
             const response = await fetch('/src/api/shoppinglist/index.php')
             const result = await response.json()
 
-            const isLoggedIn = result.success === true && response.status !== 401
+            if (!result.success && response.status === 401) {
+                handleNotLoggedIn()
+                return
+            }
 
-            newShoppingListButton.hidden = !isLoggedIn
-            signupButton.hidden = isLoggedIn
-            loginButton.hidden = isLoggedIn
-
-            if (!isLoggedIn) {return}
+            handleLoggedIn()
 
             const shoppinglists = result.data
 
@@ -179,6 +183,15 @@
                 event.target.closest('dialog').close()
 
                 fetchShoppingLists()
+            }
+        })
+
+        signoutButton.addEventListener('click', async () => {
+            const response = await fetch('/src/api/authentication/signout.php')
+            const result = await response.json()
+
+            if (result.success) {
+                handleNotLoggedIn()
             }
         })
 

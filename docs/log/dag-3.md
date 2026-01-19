@@ -6,5 +6,5 @@ Flytte registrer ny bruker og innlogging til startside / oversikt over handlelis
 9:00 - 9:05
 Møte med prøvenemnda om endring
 
-9:05 - 
-Håndtere hva som skal vises når man er logget inn / ikke logget inn
+9:05 - 9:35
+Håndtere hva som skal vises når man er logget inn / ikke logget inn, legg til logg ut knapp
