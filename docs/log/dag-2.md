@@ -25,7 +25,7 @@ Se over arbeidet så langt og vurder hva jeg vil gjøre.
 Starte å sette opp handleliste-endepunkter
 
 13:00 - 14:00
-Gå hjem til hjemmekontor, finne meg mat og gjøre meg klar til å fortsette på planleggingen
+Gå hjem til hjemmekontor, finne meg mat og gjøre meg klar til å fortsette arbeidet
 
 14:00 - 14:30
 Ferdiggjøre handleliste-endepunktene

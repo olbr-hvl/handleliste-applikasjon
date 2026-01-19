@@ -17,3 +17,9 @@ Lunsjpause
 
 12:00 - 13:00
 Begynne å sette opp brukergrensesnittet for oversikt over varer i handleliste
+
+13:00 - 14:00
+Gå hjem til hjemmekontor, finne meg mat og gjøre meg klar til å fortsette arbeidet
+
+14:00 - 15:45
+Fortsette å sette opp brukergrensesnittet for oversikt over varer i handleliste

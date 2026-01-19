@@ -8,6 +8,7 @@
     <header>
         <a href="/public/index.html">Handlelister</a>
         <button type="button" id="signout-button">Logg ut</button>
+        <button type="button" id="edit-mode-button">Rediger</button>
     </header>
     <main>
         <ul id="shoppinglist-items-ul"></ul>
@@ -26,6 +27,7 @@
     <script>
         const shoppinglistItemsUl = document.getElementById('shoppinglist-items-ul')
         const signoutButton = document.getElementById('signout-button')
+        const editModeButton = document.getElementById('edit-mode-button')
         const addShoppinglistItemButton = document.getElementById('add-shoppinglist-item-button')
         const addShoppinglistItemForm = document.getElementById('add-shoppinglist-item-form')
 
@@ -73,7 +75,61 @@
                 id: shoppinglistItem.id
             })
 
+            const nameButton = document.createElement('button')
+            nameButton.classList.add('edit-mode-inactive')
+            nameButton.classList.toggle('bought', shoppinglistItem.bought)
+            nameButton.type = 'button'
+            nameButton.textContent = shoppinglistItem.name
+
+            nameButton.addEventListener('click', async () => {
+                const bought = nameButton.classList.contains('bought')
+
+                const response = await fetch(`/src/api/shoppinglist/item/index.php?${searchParams}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bought: !bought
+                    }),
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                    nameButton.classList.toggle('bought')
+                }
+            })
+
+            const editNameInput = document.createElement('input')
+            editNameInput.classList.add('edit-mode-active')
+            editNameInput.type = 'text'
+            editNameInput.required = true
+            editNameInput.name = `name`
+            editNameInput.defaultValue = shoppinglistItem.name
+
+            editNameInput.addEventListener('change', async () => {
+                const name = editNameInput.value
+
+                const response = await fetch(`/src/api/shoppinglist/item/index.php?${searchParams}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name
+                    }),
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                    nameButton.textContent = name
+                }
+            })
+
             const deleteButton = document.createElement('button')
+            deleteButton.classList.add('edit-mode-active')
             deleteButton.type = 'button'
             deleteButton.textContent = 'X'
             deleteButton.ariaLabel = 'fjern vare'
@@ -90,7 +146,7 @@
                 }
             })
 
-            li.append(shoppinglistItem.name, deleteButton)
+            li.append(nameButton, editNameInput, deleteButton)
             shoppinglistItemsUl.append(li)
         }
 
@@ -182,6 +238,36 @@
                 dialog.close()
             })
         })
+
+        let editModeActive = false
+
+        function updateEditModeVisibility(target) {
+            target.querySelectorAll('.edit-mode-active').forEach(element => {
+                element.hidden = !editModeActive
+            })
+
+            target.querySelectorAll('.edit-mode-inactive').forEach(element => {
+                element.hidden = editModeActive
+            })
+        }
+
+        editModeButton.addEventListener('click', () => {
+            editModeActive = !editModeActive
+
+            updateEditModeVisibility(document)
+        })
+
+        updateEditModeVisibility(document)
+
+        new MutationObserver((mutations, observer) => {
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(addedNode => {
+                    if (addedNode.nodeType !== Node.ELEMENT_NODE) {return}
+
+                    updateEditModeVisibility(addedNode)
+                })
+            })
+        }).observe(document.body, {childList: true, subtree: true})
     </script>
 </body>
 </html>
