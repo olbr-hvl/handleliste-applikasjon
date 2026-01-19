@@ -40,10 +40,10 @@
         <button type="button" id="signout-button">Logg ut</button>
     </header>
     <main>
-        <ul id="shopping-lists-ul"></ul>
-        <button type="button" id="new-shopping-list-button" data-dialog-open="new-shopping-list-dialog">Ny handleliste</button>
-        <dialog closedby="any" id="new-shopping-list-dialog">
-            <form id="new-shopping-list-form" action="/src/api/shoppinglist/index.php" method="post">
+        <ul id="shoppinglists-ul"></ul>
+        <button type="button" id="new-shoppinglist-button" data-dialog-open="new-shoppinglist-dialog">Ny handleliste</button>
+        <dialog closedby="any" id="new-shoppinglist-dialog">
+            <form id="new-shoppinglist-form" action="/src/api/shoppinglist/index.php" method="post">
                 <label>
                     Handleliste navn
                     <input type="text" required name="name">
@@ -54,12 +54,12 @@
         </dialog>
     </main>
     <script>
-        const shoppinglistsUl = document.getElementById('shopping-lists-ul')
-        const newShoppingListButton = document.getElementById('new-shopping-list-button')
+        const shoppinglistsUl = document.getElementById('shoppinglists-ul')
+        const newShoppingListButton = document.getElementById('new-shoppinglist-button')
         const signupButton = document.getElementById('signup-button')
         const loginButton = document.getElementById('login-button')
         const signoutButton = document.getElementById('signout-button')
-        const newShoppingListForm = document.getElementById('new-shopping-list-form')
+        const newShoppingListForm = document.getElementById('new-shoppinglist-form')
         const signupForm = document.getElementById('signup-form')
         const loginForm = document.getElementById('login-form')
 
@@ -110,7 +110,14 @@
 
         function addShoppinglistToUI(shoppinglist) {
             const li = document.createElement('li')
-            li.textContent = shoppinglist.name
+
+            const searchParams = new URLSearchParams({
+                id: shoppinglist.id
+            })
+
+            const anchor = document.createElement('a')
+            anchor.href = `/public/shoppinglist/index.html?${searchParams}`
+            anchor.textContent = shoppinglist.name
 
             const deleteButton = document.createElement('button')
             deleteButton.type = 'button'
@@ -118,10 +125,6 @@
             deleteButton.ariaLabel = 'slett handleliste'
 
             deleteButton.addEventListener('click', async () => {
-                const searchParams = new URLSearchParams({
-                    id: shoppinglist.id
-                })
-
                 const response = await fetch(`/src/api/shoppinglist/index.php?${searchParams}`, {
                     method: 'DELETE'
                 })
@@ -133,7 +136,7 @@
                 }
             })
 
-            li.append(deleteButton)
+            li.append(anchor, deleteButton)
             shoppinglistsUl.append(li)
         }
 
@@ -155,7 +158,7 @@
                 return
             }
 
-            shoppinglists.innerHTML = '';
+            shoppinglistsUl.innerHTML = '';
             shoppinglists.forEach(addShoppinglistToUI)
         }
 
@@ -166,6 +169,7 @@
 
             if (result.success) {
                 event.target.closest('dialog').close()
+                event.target.reset()
 
                 addShoppinglistToUI({
                     id: result.data.id,
@@ -181,6 +185,7 @@
 
             if (result.success) {
                 event.target.closest('dialog').close()
+                event.target.reset()
 
                 fetchShoppingLists()
             }

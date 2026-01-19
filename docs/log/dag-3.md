@@ -11,3 +11,9 @@ Håndtere hva som skal vises når man er logget inn / ikke logget inn, legg til 
 
 9:35 - 11:30
 Sette opp oversikt over varer i handleliste endepunkter
+
+11:30 - 12:00
+Lunsjpause
+
+12:00 - 13:00
+Begynne å sette opp brukergrensesnittet for oversikt over varer i handleliste
