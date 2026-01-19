@@ -1,0 +1,54 @@
+html {
+    font-family: Arial, Helvetica, sans-serif;
+    height: 100%
+}
+
+body {
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+header {
+    padding: 1em;
+    background-color: #ddd;
+    border-bottom: solid 1px #777;
+    display: flex;
+    gap: 1em;
+}
+
+header a {
+    align-self: center;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+ul {
+    padding: unset;
+    margin: unset;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+ul > li {
+    display: flex;
+    gap: 0.5em;
+    border-bottom: solid 1px #777;
+    padding: 1em;
+    min-height: 3em;
+}
+
+ul > li > a {
+    align-self: center;
+}
+
+button {
+    padding: 1em;
+}

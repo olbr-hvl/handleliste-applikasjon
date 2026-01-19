@@ -26,3 +26,6 @@ Fortsette å sette opp brukergrensesnittet for oversikt over varer i handleliste
 
 15:45 - 15:55
 Gjøre endringer i oversikt over handlelister siden for å gjøre det mer likt som oversikten over varer i handleliste siden
+
+15:55 - 16:30
+Jobbe litt med designet på sidene
