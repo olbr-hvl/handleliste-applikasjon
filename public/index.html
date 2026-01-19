@@ -1,34 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Handlelister</title>
 </head>
 <body>
-    <ul id="shopping-lists-ul"></ul>
-    <button type="button" id="new-shopping-list-button">Ny handleliste</button>
-    <dialog closedby="any" id="new-shopping-list-dialog">
-        <form id="new-shopping-list-form" action="/src/api/shoppinglist/index.php" method="post">
-            <label>
-                Handleliste navn
-                <input type="text" required name="name">
-            </label>
-            <button type="button" class="dialog-close-button">Avbryt</button>
-            <button type="submit">Opprett ny handleliste</button>
-        </form>
-    </dialog>
+    <header>
+        <button type="button" id="signup-button" data-dialog-open="signup-dialog">Registrer</button>
+        <dialog closedby="any" id="signup-dialog">
+            <form id="signup-form" action="/src/api/authentication/signup.php" method="post">
+                <label>
+                    E-post
+                    <input type="email" required name="email">
+                </label>
+                <label>
+                    Passord (minst 16 tegn)
+                    <input type="password" required name="password" autocomplete="new-password" minlength="16">
+                </label>
+                <button type="button" class="dialog-close-button">Avbryt</button>
+                <button type="submit">Registrer ny bruker</button>
+            </form>
+        </dialog>
+        <button type="button" id="login-button" data-dialog-open="login-dialog">Logg inn</button>
+        <dialog closedby="any" id="login-dialog">
+            <form id="login-form" action="/src/api/authentication/login.php" method="post">
+                <label>
+                    E-post
+                    <input type="email" required name="email">
+                </label>
+                <label>
+                    Passord
+                    <input type="password" required name="password" autocomplete="current-password">
+                </label>
+                <button type="button" class="dialog-close-button">Avbryt</button>
+                <button type="submit">Logg inn</button>
+            </form>
+        </dialog>
+    </header>
+    <main>
+        <ul id="shopping-lists-ul"></ul>
+        <button type="button" id="new-shopping-list-button" data-dialog-open="new-shopping-list-dialog">Ny handleliste</button>
+        <dialog closedby="any" id="new-shopping-list-dialog">
+            <form id="new-shopping-list-form" action="/src/api/shoppinglist/index.php" method="post">
+                <label>
+                    Handleliste navn
+                    <input type="text" required name="name">
+                </label>
+                <button type="button" class="dialog-close-button">Avbryt</button>
+                <button type="submit">Opprett ny handleliste</button>
+            </form>
+        </dialog>
+    </main>
     <script>
         const shoppinglistsUl = document.getElementById('shopping-lists-ul')
         const newShoppingListButton = document.getElementById('new-shopping-list-button')
-        const newShoppingListDialog = document.getElementById('new-shopping-list-dialog')
+        const signupButton = document.getElementById('signup-button')
+        const loginButton = document.getElementById('login-button')
         const newShoppingListForm = document.getElementById('new-shopping-list-form')
+        const signupForm = document.getElementById('signup-form')
+        const loginForm = document.getElementById('login-form')
 
-        newShoppingListButton.addEventListener('click', () => {
-            newShoppingListDialog.showModal()
-        })
-
-        newShoppingListForm.addEventListener('submit', async event => {
+        async function submitFormWithJson(event) {
             event.preventDefault()
 
             const form = event.target
@@ -36,6 +69,8 @@
             const method = form.method
 
             const formData = new FormData(form)
+            // Gets rid of any form controls that haven't been filled out.
+            // Note: this also gets rid of form controls which have intentionally not been filled out.
             const filteredFormData = Object.fromEntries([...formData].filter(([key, value]) => value !== ''))
             const body = JSON.stringify(filteredFormData)
 
@@ -49,27 +84,24 @@
                 headers,
             })
 
-            const result = await response.json()
-
-            if (result.success) {
-                form.closest('dialog')?.close()
-
-                addShoppinglistToUI({
-                    id: result.data.id,
-                    name: filteredFormData.name,
-                })
+            return {
+                response,
+                result: await response.json(),
+                formData: filteredFormData,
             }
-        })
+        }
 
-        const dialogCloseButtons = document.querySelectorAll('.dialog-close-button')
+        function handleLoggedIn() {
+            newShoppingListButton.hidden = false
+            signupButton.hidden = true
+            loginButton.hidden = true
+        }
 
-        dialogCloseButtons.forEach(dialogCloseButton => {
-            dialogCloseButton.addEventListener('click', () => {
-                const dialog = dialogCloseButton.closest('dialog')
-
-                dialog.close()
-            })
-        })
+        function handleNotLoggedIn() {
+            newShoppingListButton.hidden = true
+            signupButton.hidden = false
+            loginButton.hidden = false
+        }
 
         function addShoppinglistToUI(shoppinglist) {
             const li = document.createElement('li')
@@ -100,23 +132,76 @@
             shoppinglistsUl.append(li)
         }
 
-        fetch('/src/api/shoppinglist/index.php')
-            .then(response => Promise.all([response.status, response.json()]))
-            .then(([status, result]) => {
-                if (result.success === false && status === 401) {
-                    // not logged in
-                    return
-                }
+        async function fetchShoppingLists() {
+            const response = await fetch('/src/api/shoppinglist/index.php')
+            const result = await response.json()
 
-                const shoppinglists = result.data
+            const isLoggedIn = result.success === true && response.status !== 401
 
-                if (shoppinglists.length === 0) {
+            newShoppingListButton.hidden = !isLoggedIn
+            signupButton.hidden = isLoggedIn
+            loginButton.hidden = isLoggedIn
 
-                    return
-                }
+            if (!isLoggedIn) {return}
 
-                shoppinglists.forEach(addShoppinglistToUI)
+            const shoppinglists = result.data
+
+            if (shoppinglists.length === 0) {
+
+                return
+            }
+
+            shoppinglists.innerHTML = '';
+            shoppinglists.forEach(addShoppinglistToUI)
+        }
+
+        fetchShoppingLists()
+
+        newShoppingListForm.addEventListener('submit', async event => {
+            const {result, formData} = await submitFormWithJson(event)
+
+            if (result.success) {
+                event.target.closest('dialog').close()
+
+                addShoppinglistToUI({
+                    id: result.data.id,
+                    name: formData.name,
+                })
+            }
+        })
+
+        signupForm.addEventListener('submit', submitFormWithJson)
+
+        loginForm.addEventListener('submit', async event => {
+            const {result} = await submitFormWithJson(event)
+
+            if (result.success) {
+                event.target.closest('dialog').close()
+
+                fetchShoppingLists()
+            }
+        })
+
+        const dialogOpenButtons = document.querySelectorAll('[data-dialog-open]')
+
+        dialogOpenButtons.forEach(dialogOpenButton => {
+            dialogOpenButton.addEventListener('click', () => {
+                const dialogId = dialogOpenButton.dataset.dialogOpen
+                const dialog = document.getElementById(dialogId)
+
+                dialog.showModal()
             })
+        })
+
+        const dialogCloseButtons = document.querySelectorAll('.dialog-close-button')
+
+        dialogCloseButtons.forEach(dialogCloseButton => {
+            dialogCloseButton.addEventListener('click', () => {
+                const dialog = dialogCloseButton.closest('dialog')
+
+                dialog.close()
+            })
+        })
     </script>
 </body>
 </html>

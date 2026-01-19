@@ -38,3 +38,6 @@ Pause
 
 15:05 - 16:30
 Starte å sette opp brukergrensesnittet for oversikt over handlelister
+
+16:30 - 16:40
+Informere prøvenemnda om dag 2
