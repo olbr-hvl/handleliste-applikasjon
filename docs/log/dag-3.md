@@ -8,3 +8,6 @@ Møte med prøvenemnda om endring
 
 9:05 - 9:35
 Håndtere hva som skal vises når man er logget inn / ikke logget inn, legg til logg ut knapp
+
+9:35 - 11:30
+Sette opp oversikt over varer i handleliste endepunkter

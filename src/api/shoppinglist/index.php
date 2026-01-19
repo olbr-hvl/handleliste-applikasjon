@@ -4,7 +4,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     header("Content-Type: application/json");
 
     require '../../../config.php';
-    // require '../../api-functions.php';
+    require '../../api-functions.php';
 
     // Data validation
 
@@ -17,21 +17,51 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
 
     $accountId = $_SESSION['account']['id'];
 
-    // Get shoppinglists
+    if (isset($_GET['id'])) {
+        $shoppingListId = $_GET['id'];
 
-    $db = new PDO(PDO_DSN);
+        $db = new PDO(PDO_DSN);
 
-    $statement = $db->prepare(<<<SQL
-        SELECT id, name
-        FROM shoppinglist
-        WHERE account = ?;
-    SQL);
-    $statement->execute([$accountId]);
-    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if (!accountHasAccessToShoppingList($db, $accountId, $shoppingListId)) {
+            http_response_code(404);
+            exit(json_encode(['success' => false, 'error' => 'Handlelisten eksisterer ikke eller du har ikke tilgang til denne handlelisten.']));
+        }
 
-    // Response
+        // Get shoppinglist
+    
+        $statement = $db->prepare(<<<SQL
+            SELECT name
+            FROM shoppinglist
+            WHERE id = ?;
+        SQL);
+        $statement->execute([$shoppingListId]);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+    
+        if ($result === false) {
+            http_response_code(404);
+            exit(json_encode(['success' => false, 'error' => 'Fant ikke handlelisten.']));
+        }
 
-    exit(json_encode(['success' => true, 'data' => $result]));
+        // Response
+    
+        exit(json_encode(['success' => true, 'data' => $result]));
+    } else {
+        // Get shoppinglists
+    
+        $db = new PDO(PDO_DSN);
+    
+        $statement = $db->prepare(<<<SQL
+            SELECT id, name
+            FROM shoppinglist
+            WHERE account = ?;
+        SQL);
+        $statement->execute([$accountId]);
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    
+        // Response
+    
+        exit(json_encode(['success' => true, 'data' => $result]));
+    }
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -106,10 +136,17 @@ if ($_SERVER["REQUEST_METHOD"] === "PATCH") {
 
     if (!array_key_exists('account', $_SESSION)) {
         http_response_code(401);
-        exit(json_encode(['success' => false, 'error' => 'Du må være logget inn for å slette handlelisten.']));
+        exit(json_encode(['success' => false, 'error' => 'Du må være logget inn for å endre handlelisten.']));
     }
 
     $accountId = $_SESSION['account']['id'];
+
+    $db = new PDO(PDO_DSN);
+
+    if (!accountHasAccessToShoppingList($db, $accountId, $shoppingListId)) {
+        http_response_code(404);
+        exit(json_encode(['success' => false, 'error' => 'Handlelisten eksisterer ikke eller du har ikke tilgang til denne handlelisten.']));
+    }
 
     // Edit shoppinglist
 
@@ -118,9 +155,9 @@ if ($_SERVER["REQUEST_METHOD"] === "PATCH") {
     $statement = $db->prepare(<<<SQL
         UPDATE shoppinglist
         SET name = ?
-        WHERE id = ? AND account = ?;
+        WHERE id = ?;
     SQL);
-    $statement->execute([$name, $shoppingListId, $accountId]);
+    $statement->execute([$name, $shoppingListId]);
 
     // Response
 
@@ -131,7 +168,7 @@ if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
     header("Content-Type: application/json");
 
     require '../../../config.php';
-    // require '../../api-functions.php';
+    require '../../api-functions.php';
 
     // Data validation
 
@@ -151,15 +188,22 @@ if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
 
     $accountId = $_SESSION['account']['id'];
 
+    $db = new PDO(PDO_DSN);
+
+    if (!accountHasAccessToShoppingList($db, $accountId, $shoppingListId)) {
+        http_response_code(404);
+        exit(json_encode(['success' => false, 'error' => 'Handlelisten eksisterer ikke eller du har ikke tilgang til denne handlelisten.']));
+    }
+
     // Delete shoppinglist
 
     $db = new PDO(PDO_DSN);
 
     $statement = $db->prepare(<<<SQL
         DELETE FROM shoppinglist
-        WHERE id = ? AND account = ?;
+        WHERE id = ?;
     SQL);
-    $statement->execute([$shoppingListId, $accountId]);
+    $statement->execute([$shoppingListId]);
 
     // Response
 
