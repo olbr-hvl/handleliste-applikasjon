@@ -39,4 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         VALUES (?, ?);
     SQL);
     $statement->execute([$email, $hashedPassword]);
+
+    exit(json_encode(['success' => true]));
 }

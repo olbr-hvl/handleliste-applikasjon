@@ -63,4 +63,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $_SESSION['account'] = [
         'id' => $accountId
     ];
+
+    exit(json_encode(['success' => true]));
 }
