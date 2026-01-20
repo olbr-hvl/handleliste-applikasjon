@@ -12,5 +12,8 @@ Sette opp endepunkter for sortering
 10:50 - 11:20
 Sette opp sortering i siden for oversikt over handlelister
 
-11:20 - 11:50
+11:20 - 12:00
 Lunsjpause
+
+12:00 - 12:10
+Sette opp sortering i siden for oversikt over varer i handleliste
