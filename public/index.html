@@ -115,6 +115,7 @@
 
         function addShoppinglistToUI(shoppingList) {
             const li = document.createElement('li')
+            li.dataset.id = shoppingList.id
 
             const searchParams = new URLSearchParams({
                 id: shoppingList.id
@@ -152,6 +153,58 @@
                 }
             })
 
+            const moveDownButton = document.createElement('button')
+            moveDownButton.classList.add('edit-mode-active')
+            moveDownButton.type = 'button'
+            moveDownButton.textContent = 'V'
+            moveDownButton.ariaLabel = 'flytt ned handleliste'
+
+            moveDownButton.addEventListener('click', async () => {
+                const ids = [...shoppingListsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
+                const indexOfId = ids.indexOf(shoppingList.id)
+
+                if (indexOfId === -1 || indexOfId === ids.length - 1) {return}
+
+                ;[ids[indexOfId], ids[indexOfId + 1]] = [ids[indexOfId + 1], ids[indexOfId]]
+
+                const response = await fetch(`/src/api/shopping-list/order/index.php`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(ids)
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                    li.nextElementSibling.after(li)
+                }
+            })
+
+            const moveUpButton = document.createElement('button')
+            moveUpButton.classList.add('edit-mode-active')
+            moveUpButton.type = 'button'
+            moveUpButton.textContent = 'A'
+            moveUpButton.ariaLabel = 'flytt opp handleliste'
+
+            moveUpButton.addEventListener('click', async () => {
+                const ids = [...shoppingListsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
+                const indexOfId = ids.indexOf(shoppingList.id)
+
+                if (indexOfId === -1 || indexOfId === 0) {return}
+
+                ;[ids[indexOfId], ids[indexOfId - 1]] = [ids[indexOfId - 1], ids[indexOfId]]
+
+                const response = await fetch(`/src/api/shopping-list/order/index.php`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(ids)
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                    li.previousElementSibling.before(li)
+                }
+            })
+
             const deleteButton = document.createElement('button')
             deleteButton.classList.add('edit-mode-active')
             deleteButton.type = 'button'
@@ -170,7 +223,7 @@
                 }
             })
 
-            li.append(nameAnchor, editNameInput, deleteButton)
+            li.append(nameAnchor, editNameInput, moveDownButton, moveUpButton, deleteButton)
             shoppingListsUl.append(li)
         }
 

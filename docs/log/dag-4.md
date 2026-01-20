@@ -8,3 +8,9 @@ Teste applikasjonen for å bekrefte at jeg endret alt som jeg hadde tenkt å end
 
 9:25 - 10:50
 Sette opp endepunkter for sortering
+
+10:50 - 11:20
+Sette opp sortering i siden for oversikt over handlelister
+
+11:20 - 11:50
+Lunsjpause

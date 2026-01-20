@@ -10,9 +10,9 @@ Mens jeg testet applikasjonen litt oppdaget jeg at `ON DELETE CASCADE` i kolonne
 Det viste seg at SQLite ikke har foreign keys constraints aktive som standard og må aktiveres per forbindelse med `PRAGMA foreign_keys = ON;`.
 Jeg har lagt til dette forran alle `INSERT`, `UPDATE`, og `DELETE` spørringene som berører kolonner med foreign key constraints, jeg har utelat spørringer som ikke berører slike kolonner (f.eks `INSERT` i `account`, `UPDATE set = name` på `shopping_list`).
 
-Mens jeg lagde muligheten for sortering bestemte jeg meg for å lage funksjonene `accountHasAccessToShoppingLists` / `accountHasAccessToShoppingListItems` for å sjekke om brukeren hadde tilgang til en liste med id-er istedenfor å måtte gjøre en for-loop med `accountHasAccessToShoppingList` / `accountHasAccessToShoppingListItem` slik at jeg bare trengte å kjøre en SQL-spørring istedenfor flere.
+Mens jeg satt opp endepunktene for sortering bestemte jeg meg for å lage funksjonene `accountHasAccessToShoppingLists` / `accountHasAccessToShoppingListItems` for å sjekke om brukeren hadde tilgang til en liste med id-er istedenfor å måtte gjøre en for-loop med `accountHasAccessToShoppingList` / `accountHasAccessToShoppingListItem` slik at jeg bare trengte å kjøre en SQL-spørring istedenfor flere.
 
-Mitt første utkast til dette var
+Mitt første utkast til dette var:
 
 ```sql
 SELECT COUNT(*) = ?
