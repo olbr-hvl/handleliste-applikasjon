@@ -88,6 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Create shopping list item
 
+    $db->exec('PRAGMA foreign_keys = ON;');
+
     $statement = $db->prepare(<<<SQL
         INSERT INTO shopping_list_item (name, shopping_list)
         VALUES (?, ?);
@@ -191,6 +193,8 @@ if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
     }
 
     // Delete shopping list item
+
+    $db->exec('PRAGMA foreign_keys = ON;');
 
     $statement = $db->prepare(<<<SQL
         DELETE FROM shopping_list_item

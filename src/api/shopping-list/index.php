@@ -94,6 +94,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $db = new PDO(PDO_DSN);
 
+    $db->exec('PRAGMA foreign_keys = ON;');
+
     $statement = $db->prepare(<<<SQL
         INSERT INTO shopping_list (name, account)
         VALUES (?, ?);
@@ -150,8 +152,6 @@ if ($_SERVER["REQUEST_METHOD"] === "PATCH") {
 
     // Edit shopping list
 
-    $db = new PDO(PDO_DSN);
-
     $statement = $db->prepare(<<<SQL
         UPDATE shopping_list
         SET name = ?
@@ -197,7 +197,7 @@ if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
 
     // Delete shopping list
 
-    $db = new PDO(PDO_DSN);
+    $db->exec('PRAGMA foreign_keys = ON;');
 
     $statement = $db->prepare(<<<SQL
         DELETE FROM shopping_list
