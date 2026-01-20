@@ -17,3 +17,12 @@ Lunsjpause
 
 12:00 - 12:10
 Sette opp sortering i siden for oversikt over varer i handleliste
+
+12:10 - 13:00
+Jobbe litt mer med designet på sidene
+
+13:00 - 14:00
+Gå hjem til hjemmekontor, finne meg mat og gjøre meg klar til å fortsette arbeidet
+
+14:00 - 14:50
+Fortsatte med design av sidene

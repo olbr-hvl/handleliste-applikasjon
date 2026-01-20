@@ -7,21 +7,23 @@
 </head>
 <body>
     <header>
-        <a href="/public/index.html">Handlelister</a>
+        <div class="breadcrumbs"><a href="/public/index.html">Handlelister</a> > <span class="shopping-list-name"></span></div>
         <button type="button" id="signout-button">Logg ut</button>
         <button type="button" id="edit-mode-button">Rediger</button>
     </header>
     <main>
         <ul id="shopping-list-items-ul"></ul>
-        <button type="button" id="add-shopping-list-item-button" data-dialog-open="add-shopping-list-item-dialog">Legg til</button>
+        <button type="button" id="add-shopping-list-item-button" data-dialog-open="add-shopping-list-item-dialog" class="full-width-button">Legg til vare</button>
         <dialog closedby="any" id="add-shopping-list-item-dialog">
             <form id="add-shopping-list-item-form" method="post">
                 <label>
                     Vare navn
                     <input type="text" required name="name">
                 </label>
-                <button type="button" class="dialog-close-button">Avbryt</button>
-                <button type="submit">Legg til vare</button>
+                <div class="form-buttons">
+                    <button type="button" class="dialog-close-button">Avbryt</button>
+                    <button type="submit">Legg til ny vare</button>
+                </div>
             </form>
         </dialog>
     </main>
@@ -79,6 +81,7 @@
 
             const nameButton = document.createElement('button')
             nameButton.classList.add('edit-mode-inactive')
+            nameButton.classList.add('name-button')
             nameButton.classList.toggle('bought', shoppingListItem.bought)
             nameButton.type = 'button'
             nameButton.textContent = shoppingListItem.name
@@ -130,36 +133,11 @@
                 }
             })
 
-            const moveDownButton = document.createElement('button')
-            moveDownButton.classList.add('edit-mode-active')
-            moveDownButton.type = 'button'
-            moveDownButton.textContent = 'V'
-            moveDownButton.ariaLabel = 'flytt ned vare'
-
-            moveDownButton.addEventListener('click', async () => {
-                const ids = [...shoppingListItemsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
-                const indexOfId = ids.indexOf(shoppingListItem.id)
-
-                if (indexOfId === -1 || indexOfId === ids.length - 1) {return}
-
-                ;[ids[indexOfId], ids[indexOfId + 1]] = [ids[indexOfId + 1], ids[indexOfId]]
-
-                const response = await fetch(`/src/api/shopping-list/item/order/index.php`, {
-                    method: 'PATCH',
-                    body: JSON.stringify(ids)
-                })
-
-                const result = await response.json()
-
-                if (result.success) {
-                    li.nextElementSibling.after(li)
-                }
-            })
-
             const moveUpButton = document.createElement('button')
             moveUpButton.classList.add('edit-mode-active')
+            moveUpButton.classList.add('button-icon')
             moveUpButton.type = 'button'
-            moveUpButton.textContent = 'A'
+            moveUpButton.textContent = '🡅'
             moveUpButton.ariaLabel = 'flytt opp vare'
 
             moveUpButton.addEventListener('click', async () => {
@@ -182,10 +160,38 @@
                 }
             })
 
+            const moveDownButton = document.createElement('button')
+            moveDownButton.classList.add('edit-mode-active')
+            moveDownButton.classList.add('button-icon')
+            moveDownButton.type = 'button'
+            moveDownButton.textContent = '🡇'
+            moveDownButton.ariaLabel = 'flytt ned vare'
+
+            moveDownButton.addEventListener('click', async () => {
+                const ids = [...shoppingListItemsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
+                const indexOfId = ids.indexOf(shoppingListItem.id)
+
+                if (indexOfId === -1 || indexOfId === ids.length - 1) {return}
+
+                ;[ids[indexOfId], ids[indexOfId + 1]] = [ids[indexOfId + 1], ids[indexOfId]]
+
+                const response = await fetch(`/src/api/shopping-list/item/order/index.php`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(ids)
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                    li.nextElementSibling.after(li)
+                }
+            })
+
             const deleteButton = document.createElement('button')
             deleteButton.classList.add('edit-mode-active')
+            deleteButton.classList.add('button-icon')
             deleteButton.type = 'button'
-            deleteButton.textContent = 'X'
+            deleteButton.textContent = '✖'
             deleteButton.ariaLabel = 'fjern vare'
 
             deleteButton.addEventListener('click', async () => {
@@ -200,7 +206,7 @@
                 }
             })
 
-            li.append(nameButton, editNameInput, moveDownButton, moveUpButton, deleteButton)
+            li.append(nameButton, editNameInput, moveUpButton, moveDownButton, deleteButton)
             shoppingListItemsUl.append(li)
         }
 
@@ -218,6 +224,10 @@
             }
 
             const shoppingListName = result.data.name
+
+            document.querySelectorAll('.shopping-list-name').forEach(element => {
+                element.textContent = shoppingListName
+            })
 
             document.title = shoppingListName
             addShoppinglistItemForm.action = `/src/api/shopping-list/item/index.php?${searchParams}`
@@ -259,6 +269,7 @@
                 addShoppinglistItemToUI({
                     id: result.data.id,
                     name: formData.name,
+                    bought: false,
                 })
             }
         })

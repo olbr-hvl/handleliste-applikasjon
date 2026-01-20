@@ -8,6 +8,7 @@
 </head>
 <body>
     <header>
+        <div class="breadcrumbs">Handlelister</div>
         <button type="button" id="signup-button" data-dialog-open="signup-dialog">Registrer</button>
         <dialog closedby="any" id="signup-dialog">
             <form id="signup-form" action="/src/api/authentication/signup.php" method="post">
@@ -19,8 +20,10 @@
                     Passord (minst 16 tegn)
                     <input type="password" required name="password" autocomplete="new-password" minlength="16">
                 </label>
-                <button type="button" class="dialog-close-button">Avbryt</button>
-                <button type="submit">Registrer ny bruker</button>
+                <div class="form-buttons">
+                    <button type="button" class="dialog-close-button">Avbryt</button>
+                    <button type="submit">Registrer ny bruker</button>
+                </div>
             </form>
         </dialog>
         <button type="button" id="login-button" data-dialog-open="login-dialog">Logg inn</button>
@@ -34,8 +37,10 @@
                     Passord
                     <input type="password" required name="password" autocomplete="current-password">
                 </label>
-                <button type="button" class="dialog-close-button">Avbryt</button>
-                <button type="submit">Logg inn</button>
+                <div class="form-buttons">
+                    <button type="button" class="dialog-close-button">Avbryt</button>
+                    <button type="submit">Logg inn</button>
+                </div>
             </form>
         </dialog>
         <button type="button" id="signout-button">Logg ut</button>
@@ -43,15 +48,17 @@
     </header>
     <main>
         <ul id="shopping-lists-ul"></ul>
-        <button type="button" id="new-shopping-list-button" data-dialog-open="new-shopping-list-dialog">Ny handleliste</button>
+        <button type="button" id="new-shopping-list-button" data-dialog-open="new-shopping-list-dialog" class="full-width-button">Ny handleliste</button>
         <dialog closedby="any" id="new-shopping-list-dialog">
             <form id="new-shopping-list-form" action="/src/api/shopping-list/index.php" method="post">
                 <label>
                     Handleliste navn
                     <input type="text" required name="name">
                 </label>
-                <button type="button" class="dialog-close-button">Avbryt</button>
-                <button type="submit">Opprett ny handleliste</button>
+                <div class="form-buttons">
+                    <button type="button" class="dialog-close-button">Avbryt</button>
+                    <button type="submit">Opprett ny handleliste</button>
+                </div>
             </form>
         </dialog>
     </main>
@@ -153,36 +160,11 @@
                 }
             })
 
-            const moveDownButton = document.createElement('button')
-            moveDownButton.classList.add('edit-mode-active')
-            moveDownButton.type = 'button'
-            moveDownButton.textContent = 'V'
-            moveDownButton.ariaLabel = 'flytt ned handleliste'
-
-            moveDownButton.addEventListener('click', async () => {
-                const ids = [...shoppingListsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
-                const indexOfId = ids.indexOf(shoppingList.id)
-
-                if (indexOfId === -1 || indexOfId === ids.length - 1) {return}
-
-                ;[ids[indexOfId], ids[indexOfId + 1]] = [ids[indexOfId + 1], ids[indexOfId]]
-
-                const response = await fetch(`/src/api/shopping-list/order/index.php`, {
-                    method: 'PATCH',
-                    body: JSON.stringify(ids)
-                })
-
-                const result = await response.json()
-
-                if (result.success) {
-                    li.nextElementSibling.after(li)
-                }
-            })
-
             const moveUpButton = document.createElement('button')
             moveUpButton.classList.add('edit-mode-active')
+            moveUpButton.classList.add('button-icon')
             moveUpButton.type = 'button'
-            moveUpButton.textContent = 'A'
+            moveUpButton.textContent = '🡅'
             moveUpButton.ariaLabel = 'flytt opp handleliste'
 
             moveUpButton.addEventListener('click', async () => {
@@ -205,10 +187,38 @@
                 }
             })
 
+            const moveDownButton = document.createElement('button')
+            moveDownButton.classList.add('edit-mode-active')
+            moveDownButton.classList.add('button-icon')
+            moveDownButton.type = 'button'
+            moveDownButton.textContent = '🡇'
+            moveDownButton.ariaLabel = 'flytt ned handleliste'
+
+            moveDownButton.addEventListener('click', async () => {
+                const ids = [...shoppingListsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
+                const indexOfId = ids.indexOf(shoppingList.id)
+
+                if (indexOfId === -1 || indexOfId === ids.length - 1) {return}
+
+                ;[ids[indexOfId], ids[indexOfId + 1]] = [ids[indexOfId + 1], ids[indexOfId]]
+
+                const response = await fetch(`/src/api/shopping-list/order/index.php`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(ids)
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                    li.nextElementSibling.after(li)
+                }
+            })
+
             const deleteButton = document.createElement('button')
             deleteButton.classList.add('edit-mode-active')
+            deleteButton.classList.add('button-icon')
             deleteButton.type = 'button'
-            deleteButton.textContent = 'X'
+            deleteButton.textContent = '✖'
             deleteButton.ariaLabel = 'slett handleliste'
 
             deleteButton.addEventListener('click', async () => {
@@ -223,7 +233,7 @@
                 }
             })
 
-            li.append(nameAnchor, editNameInput, moveDownButton, moveUpButton, deleteButton)
+            li.append(nameAnchor, editNameInput, moveUpButton, moveDownButton, deleteButton)
             shoppingListsUl.append(li)
         }
 

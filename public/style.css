@@ -8,6 +8,15 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
+    max-width: 48em;
+    margin: auto;
+}
+
+@media (width > 48em) {
+    body {
+        border-left: solid 1px black;
+        border-right: solid 1px black;
+    }
 }
 
 header {
@@ -15,17 +24,24 @@ header {
     background-color: #ddd;
     border-bottom: solid 1px #777;
     display: flex;
+    flex-wrap: wrap;
     gap: 1em;
 }
 
-header a {
+header > * {
+    flex-grow: 1;
+}
+
+header .breadcrumbs {
     align-self: center;
+    flex-grow: 10000000;
 }
 
 main {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    overflow-y: auto;
 }
 
 ul {
@@ -35,6 +51,7 @@ ul {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    overflow-y: auto;
 }
 
 ul > li {
@@ -49,6 +66,70 @@ ul > li > a {
     align-self: center;
 }
 
+ul > li > a, ul > li > input, button.name-button {
+    flex-grow: 1;
+}
+
+input {
+    font-size: 16px;
+}
+
 button {
+    font-size: 16px;
     padding: 1em;
+}
+
+button.button-icon {
+    padding: 0.25em 0.5em;
+    font-size: 1.5em;
+}
+
+button.name-button {
+    padding: 0;
+    background-color: unset;
+    border: unset;
+    text-align: left;
+    cursor: pointer;
+}
+
+button.name-button.bought {
+    color: #555;
+    text-decoration: line-through;
+}
+
+dialog {
+    padding: 2em;
+    border-radius: 1em;
+    border: unset;
+}
+
+dialog > form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+dialog > form > label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+dialog > form > .form-buttons {
+    display: flex;
+    gap: 1em;
+    flex-wrap: wrap;
+}
+
+dialog > form > .form-buttons > button {
+    flex-grow: 1;
+}
+
+.full-width-button {
+    border: none;
+    border-top: solid 1px black;
+}
+
+.full-width-button:hover {
+    background-color: #ccc;
 }
