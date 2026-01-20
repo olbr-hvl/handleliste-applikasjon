@@ -90,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $statement = $db->prepare(<<<SQL
         INSERT INTO shopping_list_item (name, shopping_list)
-        VALUES (?, ?, ?);
+        VALUES (?, ?);
     SQL);
     $statement->execute([$name, $shoppingListId]);
 
