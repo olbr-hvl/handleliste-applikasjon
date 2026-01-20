@@ -95,6 +95,7 @@ button.name-button {
 button.name-button.bought {
     color: #555;
     text-decoration: line-through;
+    font-style: italic;
 }
 
 dialog {

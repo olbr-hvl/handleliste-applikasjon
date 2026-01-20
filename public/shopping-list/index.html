@@ -13,6 +13,7 @@
     </header>
     <main>
         <ul id="shopping-list-items-ul"></ul>
+        <button type="button" id="remove-bought-button" class="full-width-button">Fjern markering</button>
         <button type="button" id="add-shopping-list-item-button" data-dialog-open="add-shopping-list-item-dialog" class="full-width-button">Legg til vare</button>
         <dialog closedby="any" id="add-shopping-list-item-dialog">
             <form id="add-shopping-list-item-form" method="post">
@@ -31,6 +32,7 @@
         const shoppingListItemsUl = document.getElementById('shopping-list-items-ul')
         const signoutButton = document.getElementById('signout-button')
         const editModeButton = document.getElementById('edit-mode-button')
+        const removeBoughtButton = document.getElementById('remove-bought-button')
         const addShoppinglistItemButton = document.getElementById('add-shopping-list-item-button')
         const addShoppinglistItemForm = document.getElementById('add-shopping-list-item-form')
 
@@ -103,6 +105,8 @@
 
                 if (result.success) {
                     nameButton.classList.toggle('bought')
+
+                    updateRemoveBoughtButtonVisibility()
                 }
             })
 
@@ -203,11 +207,15 @@
 
                 if (result.success) {
                     li.remove()
+
+                    updateRemoveBoughtButtonVisibility()
                 }
             })
 
             li.append(nameButton, editNameInput, moveUpButton, moveDownButton, deleteButton)
             shoppingListItemsUl.append(li)
+
+            updateRemoveBoughtButtonVisibility()
         }
 
         async function fetchShoppingList() {
@@ -258,6 +266,38 @@
         }
 
         fetchShoppingList().then(fetchShoppingListItems)
+
+        function updateRemoveBoughtButtonVisibility() {
+            removeBoughtButton.hidden = !shoppingListItemsUl.querySelector('li .bought')
+        }
+
+        removeBoughtButton.addEventListener('click', () => {
+            shoppingListItemsUl.querySelectorAll('li').forEach(async li => {
+                if (!li.querySelector('.bought')) {return}
+
+                const searchParams = new URLSearchParams({
+                    id: li.dataset.id
+                })
+
+                const response = await fetch(`/src/api/shopping-list/item/index.php?${searchParams}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bought: false
+                    }),
+                })
+
+                const result = await response.json()
+
+                if (result.success) {
+                    li.querySelector('.name-button').classList.toggle('bought', false)
+                }
+            })
+
+            updateRemoveBoughtButtonVisibility()
+        })
 
         addShoppinglistItemForm.addEventListener('submit', async event => {
             const {result, formData} = await submitFormWithJson(event)

@@ -106,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Response
     
-    $shoppingListId = $db->lastInsertId();
+    $shoppingListId = (integer) $db->lastInsertId();
 
     http_response_code(201);
     exit(json_encode(['success' => true, 'data' => ['id' => $shoppingListId]]));

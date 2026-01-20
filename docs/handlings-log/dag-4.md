@@ -21,4 +21,13 @@ WHERE id IN ($shoppingListIdsPlaceholders) AND account = ?;
 ```
 
 Men denne virket ikke, etter en stund oppdaget jeg at det er fordi `COUNT(*)` blir et nummer og parameteret jeg sette inn med `?` blir en string og `=`-operatoren sammenligner også typene.
-Jeg fant ut at jeg kunne fikse dette med å endre `?` til `CAST(? AS INTEGER)` (altså gjøre parameteret mitt om til ett nummer) slik at dem begge har samme type.
+Jeg fant ut at jeg kunne fikse dette med å endre `?` til `CAST(? AS INTEGER)` (altså gjøre parameteret mitt om til ett nummer) slik at de begge har samme type.
+
+Jeg bestemte meg for å lage en "Fjern markering"-knapp som fjerner `bought`-statusen på alle varer i handlelisten for å gjøre det enklere å markere alle som ukjøpt ved neste handletur.
+Jeg fikset også et problem jeg har hatt underveis som gjorde at endepunktet mitt leverte ut `0` og `1` istedenfor `true` og `false`.
+SQLite har ikke ekte booleans og bruker bare `0` og `1` som `TRUE` og `FALSE`, og derfor får jeg ut `0` og `1` istedenfor.
+Jeg har fikset dette med å eksplisivt konvertere til `0` og `1` på `PATCH` endepunktet og konvertere til `true` og `false` på `GET` endepunktet.
+
+Jeg oppdaget at `POST` endepunktene mine opprettet en handleliste eller vare leverte tilbake id-en som string istedenfor integer.
+Dette gjorde at sorteringsknappene ikke fungerte siden de var avhengige av at de var integer.
+Jeg fikset dette problemet med å eksplisivt konvertere id-en som blir returnert til integer.

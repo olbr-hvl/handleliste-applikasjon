@@ -43,6 +43,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     $statement->execute([$shoppingListId]);
     $result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
+    // Booleans in SQLite are just the integers 0 and 1, explicitly convert to integer to avoid any potentional issues
+    foreach ($result as &$row) {
+        $row['bought'] = (boolean) $row['bought'];
+    }
+
     // Response
 
     exit(json_encode(['success' => true, 'data' => $result]));
@@ -100,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Response
     
-    $shoppingListItemId = $db->lastInsertId();
+    $shoppingListItemId = (integer) $db->lastInsertId();
 
     http_response_code(201);
     exit(json_encode(['success' => true, 'data' => ['id' => $shoppingListItemId]]));
@@ -145,6 +150,11 @@ if ($_SERVER["REQUEST_METHOD"] === "PATCH") {
     if (!accountHasAccessToShoppingListItem($db, $accountId, $shoppingListItemId)) {
         http_response_code(404);
         exit(json_encode(['success' => false, 'error' => 'Varen eksisterer ikke eller du har ikke tilgang til denne varen.']));
+    }
+
+    // Booleans in SQLite are just the integers 0 and 1, explicitly convert to integer to avoid any potentional issues
+    if (array_key_exists('bought', $editableData)) {
+        $editableData['bought'] = (integer) $editableData['bought'];
     }
 
     // Edit shopping list item
