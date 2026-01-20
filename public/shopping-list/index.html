@@ -12,10 +12,10 @@
         <button type="button" id="edit-mode-button">Rediger</button>
     </header>
     <main>
-        <ul id="shoppinglist-items-ul"></ul>
-        <button type="button" id="add-shoppinglist-item-button" data-dialog-open="add-shoppinglist-item-dialog">Legg til</button>
-        <dialog closedby="any" id="add-shoppinglist-item-dialog">
-            <form id="add-shoppinglist-item-form" method="post">
+        <ul id="shopping-list-items-ul"></ul>
+        <button type="button" id="add-shopping-list-item-button" data-dialog-open="add-shopping-list-item-dialog">Legg til</button>
+        <dialog closedby="any" id="add-shopping-list-item-dialog">
+            <form id="add-shopping-list-item-form" method="post">
                 <label>
                     Vare navn
                     <input type="text" required name="name">
@@ -26,14 +26,14 @@
         </dialog>
     </main>
     <script>
-        const shoppinglistItemsUl = document.getElementById('shoppinglist-items-ul')
+        const shoppingListItemsUl = document.getElementById('shopping-list-items-ul')
         const signoutButton = document.getElementById('signout-button')
         const editModeButton = document.getElementById('edit-mode-button')
-        const addShoppinglistItemButton = document.getElementById('add-shoppinglist-item-button')
-        const addShoppinglistItemForm = document.getElementById('add-shoppinglist-item-form')
+        const addShoppinglistItemButton = document.getElementById('add-shopping-list-item-button')
+        const addShoppinglistItemForm = document.getElementById('add-shopping-list-item-form')
 
         const windowSearchParams = new URLSearchParams(window.location.search)
-        const shoppinglistId = windowSearchParams.get('id')
+        const shoppingListId = windowSearchParams.get('id')
 
         async function submitFormWithJson(event) {
             event.preventDefault()
@@ -69,23 +69,23 @@
             window.location.href = '/public/index.html'
         }
 
-        function addShoppinglistItemToUI(shoppinglistItem) {
+        function addShoppinglistItemToUI(shoppingListItem) {
             const li = document.createElement('li')
 
             const searchParams = new URLSearchParams({
-                id: shoppinglistItem.id
+                id: shoppingListItem.id
             })
 
             const nameButton = document.createElement('button')
             nameButton.classList.add('edit-mode-inactive')
-            nameButton.classList.toggle('bought', shoppinglistItem.bought)
+            nameButton.classList.toggle('bought', shoppingListItem.bought)
             nameButton.type = 'button'
-            nameButton.textContent = shoppinglistItem.name
+            nameButton.textContent = shoppingListItem.name
 
             nameButton.addEventListener('click', async () => {
                 const bought = nameButton.classList.contains('bought')
 
-                const response = await fetch(`/src/api/shoppinglist/item/index.php?${searchParams}`, {
+                const response = await fetch(`/src/api/shopping-list/item/index.php?${searchParams}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
@@ -107,12 +107,12 @@
             editNameInput.type = 'text'
             editNameInput.required = true
             editNameInput.name = `name`
-            editNameInput.defaultValue = shoppinglistItem.name
+            editNameInput.defaultValue = shoppingListItem.name
 
             editNameInput.addEventListener('change', async () => {
                 const name = editNameInput.value
 
-                const response = await fetch(`/src/api/shoppinglist/item/index.php?${searchParams}`, {
+                const response = await fetch(`/src/api/shopping-list/item/index.php?${searchParams}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
@@ -136,7 +136,7 @@
             deleteButton.ariaLabel = 'fjern vare'
 
             deleteButton.addEventListener('click', async () => {
-                const response = await fetch(`/src/api/shoppinglist/item/index.php?${searchParams}`, {
+                const response = await fetch(`/src/api/shopping-list/item/index.php?${searchParams}`, {
                     method: 'DELETE'
                 })
 
@@ -148,15 +148,15 @@
             })
 
             li.append(nameButton, editNameInput, deleteButton)
-            shoppinglistItemsUl.append(li)
+            shoppingListItemsUl.append(li)
         }
 
         async function fetchShoppingList() {
             const searchParams = new URLSearchParams({
-                id: shoppinglistId
+                id: shoppingListId
             })
 
-            const response = await fetch(`/src/api/shoppinglist/index.php?${searchParams}`)
+            const response = await fetch(`/src/api/shopping-list/index.php?${searchParams}`)
             const result = await response.json()
 
             if (!result.success && response.status === 401) {
@@ -164,18 +164,18 @@
                 return
             }
 
-            const shoppinglistName = result.data.name
+            const shoppingListName = result.data.name
 
-            document.title = shoppinglistName
-            addShoppinglistItemForm.action = `/src/api/shoppinglist/item/index.php?${searchParams}`
+            document.title = shoppingListName
+            addShoppinglistItemForm.action = `/src/api/shopping-list/item/index.php?${searchParams}`
         }
 
         async function fetchShoppingListItems() {
             const searchParams = new URLSearchParams({
-                id: shoppinglistId
+                id: shoppingListId
             })
 
-            const response = await fetch(`/src/api/shoppinglist/item/index.php?${searchParams}`)
+            const response = await fetch(`/src/api/shopping-list/item/index.php?${searchParams}`)
             const result = await response.json()
 
             if (!result.success && response.status === 401) {
@@ -183,15 +183,15 @@
                 return
             }
 
-            const shoppinglistItems = result.data
+            const shoppingListItems = result.data
 
-            if (shoppinglistItems.length === 0) {
+            if (shoppingListItems.length === 0) {
 
                 return
             }
 
-            shoppinglistItemsUl.innerHTML = '';
-            shoppinglistItems.forEach(addShoppinglistItemToUI)
+            shoppingListItemsUl.innerHTML = '';
+            shoppingListItems.forEach(addShoppinglistItemToUI)
         }
 
         fetchShoppingList().then(fetchShoppingListItems)

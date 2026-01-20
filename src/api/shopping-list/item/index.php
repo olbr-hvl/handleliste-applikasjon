@@ -31,12 +31,12 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         exit(json_encode(['success' => false, 'error' => 'Handlelisten eksisterer ikke eller du har ikke tilgang til denne handlelisten.']));
     }
 
-    // Get shoppinglist items
+    // Get shopping list items
 
     $statement = $db->prepare(<<<SQL
         SELECT id, name, bought
-        FROM shoppinglistitem
-        WHERE shoppinglist = ?;
+        FROM shopping_list_item
+        WHERE shopping_list = ?;
     SQL);
     $statement->execute([$shoppingListId]);
     $result = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -86,13 +86,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit(json_encode(['success' => false, 'error' => 'Handlelisten eksisterer ikke eller du har ikke tilgang til denne handlelisten.']));
     }
 
-    // Create shoppinglist item
+    // Create shopping list item
 
     $statement = $db->prepare(<<<SQL
-        INSERT INTO shoppinglistitem (name, bought, shoppinglist)
+        INSERT INTO shopping_list_item (name, shopping_list)
         VALUES (?, ?, ?);
     SQL);
-    $statement->execute([$name, 0, $shoppingListId]);
+    $statement->execute([$name, $shoppingListId]);
 
     // Response
     
@@ -143,12 +143,12 @@ if ($_SERVER["REQUEST_METHOD"] === "PATCH") {
         exit(json_encode(['success' => false, 'error' => 'Varen eksisterer ikke eller du har ikke tilgang til denne varen.']));
     }
 
-    // Edit shoppinglist item
+    // Edit shopping list item
 
     $setClause = implode(",\n    ", array_map(fn($column) => "$column = ?", array_keys($editableData)));
 
     $statement = $db->prepare(<<<SQL
-        UPDATE shoppinglistitem
+        UPDATE shopping_list_item
         SET $setClause
         WHERE id = ?;
     SQL);
@@ -190,10 +190,10 @@ if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
         exit(json_encode(['success' => false, 'error' => 'Varen eksisterer ikke eller du har ikke tilgang til denne varen.']));
     }
 
-    // Delete shoppinglist item
+    // Delete shopping list item
 
     $statement = $db->prepare(<<<SQL
-        DELETE FROM shoppinglistitem
+        DELETE FROM shopping_list_item
         WHERE id = ?;
     SQL);
     $statement->execute([$shoppingListItemId]);

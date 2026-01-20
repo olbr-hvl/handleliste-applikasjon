@@ -27,11 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
             exit(json_encode(['success' => false, 'error' => 'Handlelisten eksisterer ikke eller du har ikke tilgang til denne handlelisten.']));
         }
 
-        // Get shoppinglist
+        // Get shopping list
     
         $statement = $db->prepare(<<<SQL
             SELECT name
-            FROM shoppinglist
+            FROM shopping_list
             WHERE id = ?;
         SQL);
         $statement->execute([$shoppingListId]);
@@ -46,13 +46,13 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     
         exit(json_encode(['success' => true, 'data' => $result]));
     } else {
-        // Get shoppinglists
+        // Get shopping lists
     
         $db = new PDO(PDO_DSN);
     
         $statement = $db->prepare(<<<SQL
             SELECT id, name
-            FROM shoppinglist
+            FROM shopping_list
             WHERE account = ?;
         SQL);
         $statement->execute([$accountId]);
@@ -90,12 +90,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $accountId = $_SESSION['account']['id'];
 
-    // Create shoppinglist
+    // Create shopping list
 
     $db = new PDO(PDO_DSN);
 
     $statement = $db->prepare(<<<SQL
-        INSERT INTO shoppinglist (name, account)
+        INSERT INTO shopping_list (name, account)
         VALUES (?, ?);
     SQL);
     $statement->execute([$name, $accountId]);
@@ -148,12 +148,12 @@ if ($_SERVER["REQUEST_METHOD"] === "PATCH") {
         exit(json_encode(['success' => false, 'error' => 'Handlelisten eksisterer ikke eller du har ikke tilgang til denne handlelisten.']));
     }
 
-    // Edit shoppinglist
+    // Edit shopping list
 
     $db = new PDO(PDO_DSN);
 
     $statement = $db->prepare(<<<SQL
-        UPDATE shoppinglist
+        UPDATE shopping_list
         SET name = ?
         WHERE id = ?;
     SQL);
@@ -195,12 +195,12 @@ if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
         exit(json_encode(['success' => false, 'error' => 'Handlelisten eksisterer ikke eller du har ikke tilgang til denne handlelisten.']));
     }
 
-    // Delete shoppinglist
+    // Delete shopping list
 
     $db = new PDO(PDO_DSN);
 
     $statement = $db->prepare(<<<SQL
-        DELETE FROM shoppinglist
+        DELETE FROM shopping_list
         WHERE id = ?;
     SQL);
     $statement->execute([$shoppingListId]);

@@ -42,10 +42,10 @@
         <button type="button" id="edit-mode-button">Rediger</button>
     </header>
     <main>
-        <ul id="shoppinglists-ul"></ul>
-        <button type="button" id="new-shoppinglist-button" data-dialog-open="new-shoppinglist-dialog">Ny handleliste</button>
-        <dialog closedby="any" id="new-shoppinglist-dialog">
-            <form id="new-shoppinglist-form" action="/src/api/shoppinglist/index.php" method="post">
+        <ul id="shopping-lists-ul"></ul>
+        <button type="button" id="new-shopping-list-button" data-dialog-open="new-shopping-list-dialog">Ny handleliste</button>
+        <dialog closedby="any" id="new-shopping-list-dialog">
+            <form id="new-shopping-list-form" action="/src/api/shopping-list/index.php" method="post">
                 <label>
                     Handleliste navn
                     <input type="text" required name="name">
@@ -56,13 +56,13 @@
         </dialog>
     </main>
     <script>
-        const shoppinglistsUl = document.getElementById('shoppinglists-ul')
-        const newShoppingListButton = document.getElementById('new-shoppinglist-button')
+        const shoppingListsUl = document.getElementById('shopping-lists-ul')
+        const newShoppingListButton = document.getElementById('new-shopping-list-button')
         const signupButton = document.getElementById('signup-button')
         const loginButton = document.getElementById('login-button')
         const signoutButton = document.getElementById('signout-button')
         const editModeButton = document.getElementById('edit-mode-button')
-        const newShoppingListForm = document.getElementById('new-shoppinglist-form')
+        const newShoppingListForm = document.getElementById('new-shopping-list-form')
         const signupForm = document.getElementById('signup-form')
         const loginForm = document.getElementById('login-form')
 
@@ -110,32 +110,32 @@
             loginButton.hidden = false
             signoutButton.hidden = true
             editModeButton.hidden = true
-            shoppinglistsUl.innerHTML = '';
+            shoppingListsUl.innerHTML = '';
         }
 
-        function addShoppinglistToUI(shoppinglist) {
+        function addShoppinglistToUI(shoppingList) {
             const li = document.createElement('li')
 
             const searchParams = new URLSearchParams({
-                id: shoppinglist.id
+                id: shoppingList.id
             })
 
             const nameAnchor = document.createElement('a')
             nameAnchor.classList.add('edit-mode-inactive')
-            nameAnchor.href = `/public/shoppinglist/index.html?${searchParams}`
-            nameAnchor.textContent = shoppinglist.name
+            nameAnchor.href = `/public/shopping-list/index.html?${searchParams}`
+            nameAnchor.textContent = shoppingList.name
 
             const editNameInput = document.createElement('input')
             editNameInput.classList.add('edit-mode-active')
             editNameInput.type = 'text'
             editNameInput.required = true
             editNameInput.name = `name`
-            editNameInput.defaultValue = shoppinglist.name
+            editNameInput.defaultValue = shoppingList.name
 
             editNameInput.addEventListener('change', async () => {
                 const name = editNameInput.value
 
-                const response = await fetch(`/src/api/shoppinglist/index.php?${searchParams}`, {
+                const response = await fetch(`/src/api/shopping-list/index.php?${searchParams}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
@@ -159,7 +159,7 @@
             deleteButton.ariaLabel = 'slett handleliste'
 
             deleteButton.addEventListener('click', async () => {
-                const response = await fetch(`/src/api/shoppinglist/index.php?${searchParams}`, {
+                const response = await fetch(`/src/api/shopping-list/index.php?${searchParams}`, {
                     method: 'DELETE'
                 })
 
@@ -171,11 +171,11 @@
             })
 
             li.append(nameAnchor, editNameInput, deleteButton)
-            shoppinglistsUl.append(li)
+            shoppingListsUl.append(li)
         }
 
         async function fetchShoppingLists() {
-            const response = await fetch('/src/api/shoppinglist/index.php')
+            const response = await fetch('/src/api/shopping-list/index.php')
             const result = await response.json()
 
             if (!result.success && response.status === 401) {
@@ -185,15 +185,15 @@
 
             handleLoggedIn()
 
-            const shoppinglists = result.data
+            const shoppingLists = result.data
 
-            if (shoppinglists.length === 0) {
+            if (shoppingLists.length === 0) {
 
                 return
             }
 
-            shoppinglistsUl.innerHTML = '';
-            shoppinglists.forEach(addShoppinglistToUI)
+            shoppingListsUl.innerHTML = '';
+            shoppingLists.forEach(addShoppinglistToUI)
         }
 
         fetchShoppingLists()

@@ -15,7 +15,7 @@ function accountHasAccessToShoppingList($db, $accountId, $shoppingListId) {
     $statement = $db->prepare(<<<SQL
         SELECT EXISTS (
             SELECT 1
-            FROM shoppinglist
+            FROM shopping_list
             WHERE id = ? AND account = ?
         );
     SQL);
@@ -29,9 +29,9 @@ function accountHasAccessToShoppingListItem($db, $accountId, $shoppingListItemId
     $statement = $db->prepare(<<<SQL
         SELECT EXISTS (
             SELECT 1
-            FROM shoppinglistitem
-            LEFT JOIN shoppinglist ON shoppinglistitem.shoppinglist = shoppinglist.id
-            WHERE shoppinglistitem.id = ? AND shoppinglist.account = ?
+            FROM shopping_list_item
+            LEFT JOIN shopping_list ON shopping_list_item.shopping_list = shopping_list.id
+            WHERE shopping_list_item.id = ? AND shopping_list.account = ?
         );
     SQL);
     $statement->execute([$shoppingListItemId, $accountId]);
