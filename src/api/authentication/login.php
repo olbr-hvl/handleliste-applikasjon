@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $result = $statement->fetch(PDO::FETCH_ASSOC);
 
     if ($result === false) {
-        http_response_code(400);
+        http_response_code(401);
         exit(json_encode(['success' => false, 'error' => 'Feil email eller passord.'])); 
     }
 
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $hashedPassword = $result['hashed_password'];
 
     if (!password_verify($password, $hashedPassword)) {
-        http_response_code(400);
+        http_response_code(401);
         exit(json_encode(['success' => false, 'error' => 'Feil email eller passord.']));
     }
 
