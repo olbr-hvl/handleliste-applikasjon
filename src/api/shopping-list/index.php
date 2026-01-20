@@ -51,9 +51,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         $db = new PDO(PDO_DSN);
     
         $statement = $db->prepare(<<<SQL
-            SELECT id, name
+            SELECT shopping_list.id, shopping_list.name
             FROM shopping_list
-            WHERE account = ?;
+            LEFT JOIN shopping_list_order ON shopping_list.id = shopping_list_order.shopping_list
+            WHERE shopping_list.account = ?
+            ORDER BY shopping_list_order.sort_order NULLS LAST
         SQL);
         $statement->execute([$accountId]);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);

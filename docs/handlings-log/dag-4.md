@@ -9,3 +9,16 @@ Jeg ryddet opp i bruken min av `shoppinglistitem` vs `shopping_list_item` der je
 Mens jeg testet applikasjonen litt oppdaget jeg at `ON DELETE CASCADE` i kolonne definisjonene mine ikke virket sånn som jeg forventet.
 Det viste seg at SQLite ikke har foreign keys constraints aktive som standard og må aktiveres per forbindelse med `PRAGMA foreign_keys = ON;`.
 Jeg har lagt til dette forran alle `INSERT`, `UPDATE`, og `DELETE` spørringene som berører kolonner med foreign key constraints, jeg har utelat spørringer som ikke berører slike kolonner (f.eks `INSERT` i `account`, `UPDATE set = name` på `shopping_list`).
+
+Mens jeg lagde muligheten for sortering bestemte jeg meg for å lage funksjonene `accountHasAccessToShoppingLists` / `accountHasAccessToShoppingListItems` for å sjekke om brukeren hadde tilgang til en liste med id-er istedenfor å måtte gjøre en for-loop med `accountHasAccessToShoppingList` / `accountHasAccessToShoppingListItem` slik at jeg bare trengte å kjøre en SQL-spørring istedenfor flere.
+
+Mitt første utkast til dette var
+
+```sql
+SELECT COUNT(*) = ?
+FROM shopping_list
+WHERE id IN ($shoppingListIdsPlaceholders) AND account = ?;
+```
+
+Men denne virket ikke, etter en stund oppdaget jeg at det er fordi `COUNT(*)` blir et nummer og parameteret jeg sette inn med `?` blir en string og `=`-operatoren sammenligner også typene.
+Jeg fant ut at jeg kunne fikse dette med å endre `?` til `CAST(? AS INTEGER)` (altså gjøre parameteret mitt om til ett nummer) slik at dem begge har samme type.

@@ -34,9 +34,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     // Get shopping list items
 
     $statement = $db->prepare(<<<SQL
-        SELECT id, name, bought
+        SELECT shopping_list_item.id, shopping_list_item.name, shopping_list_item.bought
         FROM shopping_list_item
-        WHERE shopping_list = ?;
+        LEFT JOIN shopping_list_item_order ON shopping_list_item.id = shopping_list_item_order.shopping_list_item
+        WHERE shopping_list = ?
+        ORDER BY shopping_list_item_order.sort_order NULLS LAST;
     SQL);
     $statement->execute([$shoppingListId]);
     $result = $statement->fetchAll(PDO::FETCH_ASSOC);
