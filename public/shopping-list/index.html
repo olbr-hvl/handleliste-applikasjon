@@ -293,12 +293,12 @@
         fetchShoppingList().then(fetchShoppingListItems)
 
         function updateRemoveBoughtButtonVisibility() {
-            removeBoughtButton.hidden = !shoppingListItemsUl.querySelector('li .bought')
+            removeBoughtButton.hidden = !shoppingListItemsUl.querySelector('li .name-checkbox:checked')
         }
 
         removeBoughtButton.addEventListener('click', () => {
             shoppingListItemsUl.querySelectorAll('li').forEach(async li => {
-                if (!li.querySelector('.bought')) {return}
+                if (!li.querySelector('.name-checkbox:checked')) {return}
 
                 const searchParams = new URLSearchParams({
                     id: li.dataset.id
@@ -318,10 +318,10 @@
 
                 if (result.success) {
                     li.querySelector('.name-checkbox').checked = false
+
+                    updateRemoveBoughtButtonVisibility()
                 }
             })
-
-            updateRemoveBoughtButtonVisibility()
         })
 
         addShoppinglistItemForm.addEventListener('submit', async event => {
