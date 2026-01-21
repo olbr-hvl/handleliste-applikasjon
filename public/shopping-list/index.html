@@ -13,7 +13,7 @@
     </header>
     <main>
         <ul id="shopping-list-items-ul"></ul>
-        <button type="button" id="remove-bought-button" class="full-width-button">Fjern markering</button>
+        <button type="button" id="remove-bought-button" class="full-width-button" hidden>Fjern markering</button>
         <button type="button" id="add-shopping-list-item-button" data-dialog-open="add-shopping-list-item-dialog" class="full-width-button">Legg til vare</button>
         <dialog closedby="any" id="add-shopping-list-item-dialog">
             <form id="add-shopping-list-item-form" method="post">
@@ -81,15 +81,21 @@
                 id: shoppingListItem.id
             })
 
-            const nameButton = document.createElement('button')
-            nameButton.classList.add('edit-mode-inactive')
-            nameButton.classList.add('name-button')
-            nameButton.classList.toggle('bought', shoppingListItem.bought)
-            nameButton.type = 'button'
-            nameButton.textContent = shoppingListItem.name
+            const nameSpan = document.createElement('span')
+            nameSpan.classList.add('edit-mode-inactive')
+            nameSpan.classList.add('name-span')
+            nameSpan.textContent = shoppingListItem.name
 
-            nameButton.addEventListener('click', async () => {
-                const bought = nameButton.classList.contains('bought')
+            const nameCheckbox = document.createElement('input')
+            nameCheckbox.classList.add('edit-mode-inactive')
+            nameCheckbox.classList.add('name-checkbox')
+            nameCheckbox.classList.add('screenreader-only')
+            nameCheckbox.checked = shoppingListItem.bought
+            nameCheckbox.type = 'checkbox'
+            nameCheckbox.ariaLabel = 'Kjøpt'
+
+            nameCheckbox.addEventListener('change', async () => {
+                const bought = nameCheckbox.checked
 
                 const response = await fetch(`/src/api/shopping-list/item/index.php?${searchParams}`, {
                     method: 'PATCH',
@@ -97,14 +103,14 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        bought: !bought
+                        bought
                     }),
                 })
 
                 const result = await response.json()
 
                 if (result.success) {
-                    nameButton.classList.toggle('bought')
+                    nameCheckbox.checked = bought
 
                     updateRemoveBoughtButtonVisibility()
                 }
@@ -116,6 +122,7 @@
             editNameInput.required = true
             editNameInput.name = `name`
             editNameInput.defaultValue = shoppingListItem.name
+            editNameInput.ariaLabel = editNameInput.title = `endre navn på varen`
 
             editNameInput.addEventListener('change', async () => {
                 const name = editNameInput.value
@@ -133,7 +140,7 @@
                 const result = await response.json()
 
                 if (result.success) {
-                    nameButton.textContent = name
+                    nameCheckbox.textContent = name
                 }
             })
 
@@ -141,8 +148,12 @@
             moveUpButton.classList.add('edit-mode-active')
             moveUpButton.classList.add('button-icon')
             moveUpButton.type = 'button'
-            moveUpButton.textContent = '🡅'
-            moveUpButton.ariaLabel = 'flytt opp vare'
+            moveUpButton.ariaLabel = moveUpButton.title = 'flytt opp varen'
+
+            const moveUpButtonIcon = document.createElement('span')
+            moveUpButtonIcon.textContent = '🡅'
+            moveUpButtonIcon.ariaHidden = true
+            moveUpButton.append(moveUpButtonIcon)
 
             moveUpButton.addEventListener('click', async () => {
                 const ids = [...shoppingListItemsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
@@ -168,8 +179,12 @@
             moveDownButton.classList.add('edit-mode-active')
             moveDownButton.classList.add('button-icon')
             moveDownButton.type = 'button'
-            moveDownButton.textContent = '🡇'
-            moveDownButton.ariaLabel = 'flytt ned vare'
+            moveDownButton.ariaLabel = moveDownButton.title = 'flytt ned varen'
+
+            const moveDownButtonIcon = document.createElement('span')
+            moveDownButtonIcon.textContent = '🡇'
+            moveDownButtonIcon.ariaHidden = true
+            moveDownButton.append(moveDownButtonIcon)
 
             moveDownButton.addEventListener('click', async () => {
                 const ids = [...shoppingListItemsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
@@ -195,8 +210,12 @@
             deleteButton.classList.add('edit-mode-active')
             deleteButton.classList.add('button-icon')
             deleteButton.type = 'button'
-            deleteButton.textContent = '✖'
-            deleteButton.ariaLabel = 'fjern vare'
+            deleteButton.ariaLabel = deleteButton.title = 'fjern varen'
+
+            const deleteButtonIcon = document.createElement('span')
+            deleteButtonIcon.textContent = '✖'
+            deleteButtonIcon.ariaHidden = true
+            deleteButton.append(deleteButtonIcon)
 
             deleteButton.addEventListener('click', async () => {
                 const response = await fetch(`/src/api/shopping-list/item/index.php?${searchParams}`, {
@@ -212,7 +231,13 @@
                 }
             })
 
-            li.append(nameButton, editNameInput, moveUpButton, moveDownButton, deleteButton)
+            li.addEventListener('click', () => {
+                if (editModeActive) {return}
+
+                nameCheckbox.click()
+            })
+
+            li.append(nameCheckbox, nameSpan, editNameInput, moveUpButton, moveDownButton, deleteButton)
             shoppingListItemsUl.append(li)
 
             updateRemoveBoughtButtonVisibility()
@@ -292,7 +317,7 @@
                 const result = await response.json()
 
                 if (result.success) {
-                    li.querySelector('.name-button').classList.toggle('bought', false)
+                    li.querySelector('.name-checkbox').checked = false
                 }
             })
 
@@ -347,6 +372,8 @@
         let editModeActive = false
 
         function updateEditModeVisibility(target) {
+            shoppingListItemsUl.classList.toggle('edit-mode', editModeActive)
+
             target.querySelectorAll('.edit-mode-active').forEach(element => {
                 element.hidden = !editModeActive
             })

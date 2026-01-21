@@ -9,7 +9,7 @@
 <body>
     <header>
         <div class="breadcrumbs">Handlelister</div>
-        <button type="button" id="signup-button" data-dialog-open="signup-dialog">Registrer</button>
+        <button type="button" id="signup-button" data-dialog-open="signup-dialog" hidden>Registrer</button>
         <dialog closedby="any" id="signup-dialog">
             <form id="signup-form" action="/src/api/authentication/signup.php" method="post">
                 <label>
@@ -26,7 +26,7 @@
                 </div>
             </form>
         </dialog>
-        <button type="button" id="login-button" data-dialog-open="login-dialog">Logg inn</button>
+        <button type="button" id="login-button" data-dialog-open="login-dialog" hidden>Logg inn</button>
         <dialog closedby="any" id="login-dialog">
             <form id="login-form" action="/src/api/authentication/login.php" method="post">
                 <label>
@@ -43,12 +43,12 @@
                 </div>
             </form>
         </dialog>
-        <button type="button" id="signout-button">Logg ut</button>
-        <button type="button" id="edit-mode-button">Rediger</button>
+        <button type="button" id="signout-button" hidden>Logg ut</button>
+        <button type="button" id="edit-mode-button" hidden>Rediger</button>
     </header>
     <main>
         <ul id="shopping-lists-ul"></ul>
-        <button type="button" id="new-shopping-list-button" data-dialog-open="new-shopping-list-dialog" class="full-width-button">Ny handleliste</button>
+        <button type="button" id="new-shopping-list-button" data-dialog-open="new-shopping-list-dialog" class="full-width-button" hidden>Ny handleliste</button>
         <dialog closedby="any" id="new-shopping-list-dialog">
             <form id="new-shopping-list-form" action="/src/api/shopping-list/index.php" method="post">
                 <label>
@@ -139,6 +139,7 @@
             editNameInput.required = true
             editNameInput.name = `name`
             editNameInput.defaultValue = shoppingList.name
+            editNameInput.ariaLabel = editNameInput.title = `endre navn på handlelisten`
 
             editNameInput.addEventListener('change', async () => {
                 const name = editNameInput.value
@@ -164,8 +165,12 @@
             moveUpButton.classList.add('edit-mode-active')
             moveUpButton.classList.add('button-icon')
             moveUpButton.type = 'button'
-            moveUpButton.textContent = '🡅'
-            moveUpButton.ariaLabel = 'flytt opp handleliste'
+            moveUpButton.ariaLabel = moveUpButton.title = 'flytt opp handlelisten'
+
+            const moveUpButtonIcon = document.createElement('span')
+            moveUpButtonIcon.textContent = '🡅'
+            moveUpButtonIcon.ariaHidden = true
+            moveUpButton.append(moveUpButtonIcon)
 
             moveUpButton.addEventListener('click', async () => {
                 const ids = [...shoppingListsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
@@ -191,8 +196,12 @@
             moveDownButton.classList.add('edit-mode-active')
             moveDownButton.classList.add('button-icon')
             moveDownButton.type = 'button'
-            moveDownButton.textContent = '🡇'
-            moveDownButton.ariaLabel = 'flytt ned handleliste'
+            moveDownButton.ariaLabel = moveDownButton.title = 'flytt ned handlelisten'
+
+            const moveDownButtonIcon = document.createElement('span')
+            moveDownButtonIcon.textContent = '🡇'
+            moveDownButtonIcon.ariaHidden = true
+            moveDownButton.append(moveDownButtonIcon)
 
             moveDownButton.addEventListener('click', async () => {
                 const ids = [...shoppingListsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
@@ -218,8 +227,12 @@
             deleteButton.classList.add('edit-mode-active')
             deleteButton.classList.add('button-icon')
             deleteButton.type = 'button'
-            deleteButton.textContent = '✖'
-            deleteButton.ariaLabel = 'slett handleliste'
+            deleteButton.ariaLabel = deleteButton.title = 'slett handlelisten'
+
+            const deleteButtonIcon = document.createElement('span')
+            deleteButtonIcon.textContent = '✖'
+            deleteButtonIcon.ariaHidden = true
+            deleteButton.append(deleteButtonIcon)
 
             deleteButton.addEventListener('click', async () => {
                 const response = await fetch(`/src/api/shopping-list/index.php?${searchParams}`, {
@@ -231,6 +244,12 @@
                 if (result.success) {
                     li.remove()
                 }
+            })
+
+            li.addEventListener('click', () => {
+                if (editModeActive) {return}
+
+                nameAnchor.click()
             })
 
             li.append(nameAnchor, editNameInput, moveUpButton, moveDownButton, deleteButton)
@@ -321,6 +340,8 @@
         let editModeActive = false
 
         function updateEditModeVisibility(target) {
+            shoppingListsUl.classList.toggle('edit-mode', editModeActive)
+
             target.querySelectorAll('.edit-mode-active').forEach(element => {
                 element.hidden = !editModeActive
             })

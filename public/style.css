@@ -62,12 +62,16 @@ ul > li {
     min-height: 3em;
 }
 
-ul > li > a {
+ul > li > a, ul > li > .name-span {
     align-self: center;
 }
 
-ul > li > a, ul > li > input, button.name-button {
+ul > li > a, ul > li > input, .name-span {
     flex-grow: 1;
+}
+
+ul:not(.edit-mode) > li {
+    cursor: pointer;
 }
 
 input {
@@ -77,6 +81,7 @@ input {
 button {
     font-size: 16px;
     padding: 1em;
+    cursor: pointer;
 }
 
 button.button-icon {
@@ -84,15 +89,7 @@ button.button-icon {
     font-size: 1.5em;
 }
 
-button.name-button {
-    padding: 0;
-    background-color: unset;
-    border: unset;
-    text-align: left;
-    cursor: pointer;
-}
-
-button.name-button.bought {
+.name-checkbox:checked + .name-span {
     color: #555;
     text-decoration: line-through;
     font-style: italic;
@@ -133,4 +130,13 @@ dialog > form > .form-buttons > button {
 
 .full-width-button:hover {
     background-color: #ccc;
+}
+
+.screenreader-only {
+position:absolute;
+left:-10000px;
+top:auto;
+width:1px;
+height:1px;
+overflow:hidden;
 }

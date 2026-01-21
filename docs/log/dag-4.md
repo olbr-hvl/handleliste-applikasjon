@@ -29,3 +29,6 @@ Fortsatte med design av sidene
 
 14:50 - 16:00
 Legge til "Fjern markering"-knapp som fjerner kjøpt-statusen på alle varene i listen og fikse diverse feil jeg oppdaget
+
+16:00 - 16:30
+Dokumentering og begynne å planlegge test
