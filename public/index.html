@@ -294,7 +294,16 @@
             }
         })
 
-        signupForm.addEventListener('submit', submitFormWithJson)
+        signupForm.addEventListener('submit', async event => {
+            const {result} = await submitFormWithJson(event)
+
+            if (result.success) {
+                event.target.closest('dialog').close()
+                event.target.reset()
+
+                fetchShoppingLists()
+            }
+        })
 
         loginForm.addEventListener('submit', async event => {
             const {result} = await submitFormWithJson(event)

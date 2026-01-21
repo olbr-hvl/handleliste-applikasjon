@@ -40,5 +40,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     SQL);
     $statement->execute([$email, $hashedPassword]);
 
+    // Sign in to account
+
+    $accountId = $db->lastInsertId();
+
+    if ($accountId !== '0') {
+        session_start();
+
+        $_SESSION['account'] = [
+            'id' => $accountId
+        ];
+    }
+
+    // Response
+
     exit(json_encode(['success' => true]));
 }

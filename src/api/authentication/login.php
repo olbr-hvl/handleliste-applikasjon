@@ -64,5 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'id' => $accountId
     ];
 
+    // Response
+
     exit(json_encode(['success' => true]));
 }

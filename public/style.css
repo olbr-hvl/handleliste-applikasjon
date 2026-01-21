@@ -35,6 +35,7 @@ header > * {
 header .breadcrumbs {
     align-self: center;
     flex-grow: 10000000;
+    overflow-x: auto;
 }
 
 main {
@@ -60,6 +61,7 @@ ul > li {
     border-bottom: solid 1px #777;
     padding: 1em;
     min-height: 3em;
+    overflow-x: auto;
 }
 
 ul > li > a, ul > li > .name-span {
