@@ -27,7 +27,7 @@ Etter at du har fylt ut trykk på "Opprett ny handleliste"-knappen for å oppret
 For å endre handlelister må du først gå inn i redigeringsmodus.  
 Trykk på "Rediger"-knappen øverst på siden for å gå inn i redigeringsmodus.  
 Gjør de endringene du vil gjøre.  
-Etter du er ferdig med å gjøre endringer trykk på "Rediger"-knappen igjen for å gå ut av redigeringsmodus.
+Etter du er ferdig med å gjøre endringer trykk på "Ferdig"-knappen som erstattet "Rediger"-kappen for å gå ut av redigeringsmodus.
 
 #### Endre navn på en handleliste
 
@@ -57,7 +57,7 @@ Etter at du har fylt ut trykk på "Legg til ny vare"-knappen for å legge til va
 For å endre varer må du først gå inn i redigeringsmodus.  
 Trykk på "Rediger"-knappen øverst på siden for å gå inn i redigeringsmodus.  
 Gjør de endringene du vil gjøre.  
-Etter du er ferdig med å gjøre endringer trykk på "Rediger"-knappen igjen for å gå ut av redigeringsmodus.
+Etter du er ferdig med å gjøre endringer trykk på "Ferdig"-knappen som erstattet "Rediger"-kappen for å gå ut av redigeringsmodus.
 
 #### Marker varen som handlet
 

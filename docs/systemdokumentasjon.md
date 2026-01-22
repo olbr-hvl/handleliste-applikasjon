@@ -36,4 +36,23 @@ Dokumentasjonen på API-et kan man finne på [`/docs/openapi/index.html`](/docs/
 Dersom du vil bruke "Try it out"-mode for å teste API-et kan det gjøres med [PHP sin innebygde webserver](#testing).
 Merk at siden API-et bruker session cookie vil nettleser automatisk håndtere cookien for API-et og den kan ikke bli satt manuelt.
 
-## Security risks
+## Sikkerhetsrisikoer
+
+### SQL injection
+
+Koden til applikasjon bruker hovedsaklig prepared statements i SQL for å hindre SQL injection angrep.
+Det er enkelte steder der deler av SQL-spørringene er generert dynamisk, men bruker fortsatt genererte placeholders for brukerstyrte variabler eller kjente verdier via tillatelselister.
+
+### CSRF
+
+Applikasjonen er beskyttet mot cross-site request forgery angrep fordi de fleste endepunktene vil utløse [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS) feil. Alle endepunkt som gjør endringer krever en JSON request body (`Content-Type: application/json`) som gjør at forespørslene ikke blir vurdert som en [simple requests](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/CSRF#avoiding_simple_requests).
+
+### Grenser
+
+Applikasjonen har ingen grenser som standard på hvor mye data som kan lastes opp i endepunktene.
+Det er heller ingen grense på hvor lange navn handlelistene eller varene kan ha.
+Dette gjør det enkelt å eventuelt kjøre Denial of Service angrep eller å misbruke API-et for filhosting og fildeling.
+
+### XSS
+
+Applikasjonen skal ikke være sårbar til cross-site scripting angrep fordi all data som er dynamisk og hentet ut fra API-ene er satt inn i sidene med [`Node.textContent`](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) og ikke parset som HTML. Det er ingen sanering av brukerdata før eller etter det blir lagt inn i databasen. dataene blir altså lagret akkuratt slik som de ser ut så man må fortsatt være klar over hva man gjør og være forsiktig ved videre utvikling for å ikke ta i bruk utrygge metoder.

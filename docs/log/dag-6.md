@@ -11,3 +11,18 @@ Rydding av kode
 
 10:45 - 11:45
 Legge til bedre feilmeldinger for brukere of ekstra informasjon dersom man ikke er logget inn eller har noe i listene ennå
+
+11:45 - 12:20
+Lunsjpause
+
+12:20 - 13:00
+Starte å gjøre meg klar til presentasjon
+
+13:00 - 14:00
+Gå hjem til hjemmekontor, finne meg mat og gjøre meg klar til å fortsette arbeidet
+
+14:00 - 16:30
+Ferdiggjøre ting og bli klar til presentasjon, reflektere over arbeid
+
+16:30
+Sende dokumentasjon på e-post til prøvenemnda

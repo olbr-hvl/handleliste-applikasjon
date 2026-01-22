@@ -700,6 +700,17 @@
           },
           "required": true
         },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Shopping list ID."
+          }
+        ],
         "responses": {
           "201": {
             "description": "Successful operation",
