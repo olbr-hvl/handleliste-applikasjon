@@ -1,3 +1,5 @@
+const loginMessage = document.getElementById('login-message')
+const noShoppingListsMessage = document.getElementById('no-shopping-lists-message')
 const shoppingListsUl = document.getElementById('shopping-lists-ul')
 const newShoppingListButton = document.getElementById('new-shopping-list-button')
 const signupButton = document.getElementById('signup-button')
@@ -44,6 +46,7 @@ function handleLoggedIn() {
     loginButton.hidden = true
     signoutButton.hidden = false
     editModeButton.hidden = false
+    loginMessage.hidden = true
 }
 
 function handleNotLoggedIn() {
@@ -52,7 +55,9 @@ function handleNotLoggedIn() {
     loginButton.hidden = false
     signoutButton.hidden = true
     editModeButton.hidden = true
+    loginMessage.hidden = false
     shoppingListsUl.innerHTML = '';
+    
 }
 
 function addShoppinglistToUI(shoppingList) {
@@ -178,6 +183,8 @@ function addShoppinglistToUI(shoppingList) {
 
         if (result.success) {
             li.remove()
+
+            updateNoShoppingListsMessage()
         }
     })
 
@@ -189,6 +196,8 @@ function addShoppinglistToUI(shoppingList) {
 
     li.append(nameAnchor, editNameInput, moveUpButton, moveDownButton, deleteButton)
     shoppingListsUl.append(li)
+
+    updateNoShoppingListsMessage()
 }
 
 async function fetchShoppingLists() {
@@ -204,10 +213,9 @@ async function fetchShoppingLists() {
 
     const shoppingLists = result.data
 
-    if (shoppingLists.length === 0) {
+    updateNoShoppingListsMessage()
 
-        return
-    }
+    if (shoppingLists.length === 0) {return}
 
     shoppingListsUl.innerHTML = '';
     shoppingLists.forEach(addShoppinglistToUI)
@@ -215,8 +223,22 @@ async function fetchShoppingLists() {
 
 fetchShoppingLists()
 
+function updateNoShoppingListsMessage() {
+    noShoppingListsMessage.hidden = shoppingListsUl.childElementCount !== 0
+}
+
+function handleFormError(form, result) {
+    const formError = form.querySelector('.form-error')
+    const formErrorMessage = formError.querySelector('.form-error-message')
+
+    formError.hidden = result.success
+    formErrorMessage.textContent = !result.success ? result.error : ''
+}
+
 newShoppingListForm.addEventListener('submit', async event => {
     const {result, formData} = await submitFormWithJson(event)
+
+    handleFormError(event.target, result)
 
     if (result.success) {
         event.target.closest('dialog').close()
@@ -232,6 +254,8 @@ newShoppingListForm.addEventListener('submit', async event => {
 signupForm.addEventListener('submit', async event => {
     const {result} = await submitFormWithJson(event)
 
+    handleFormError(event.target, result)
+
     if (result.success) {
         event.target.closest('dialog').close()
         event.target.reset()
@@ -242,6 +266,8 @@ signupForm.addEventListener('submit', async event => {
 
 loginForm.addEventListener('submit', async event => {
     const {result} = await submitFormWithJson(event)
+
+    handleFormError(event.target, result)
 
     if (result.success) {
         event.target.closest('dialog').close()

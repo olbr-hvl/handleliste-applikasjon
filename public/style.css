@@ -45,6 +45,14 @@ main {
     overflow-y: auto;
 }
 
+main > .main-message {
+    font-size: 1.5em;
+    text-align: center;
+    max-width: 50%;
+    align-self: center;
+    flex-grow: 1;
+}
+
 ul {
     padding: unset;
     margin: unset;
@@ -123,6 +131,20 @@ dialog > form > .form-buttons {
 
 dialog > form > .form-buttons > button {
     flex-grow: 1;
+}
+
+dialog > form .form-error {
+    border: solid 2px #d4351c;
+}
+
+dialog > form .form-error > p {
+    margin: unset;
+    padding: 0.5em;
+    line-height: 1.5;
+}
+
+dialog > form .form-error .form-error-message {
+    color: #d4351c;
 }
 
 .full-width-button {

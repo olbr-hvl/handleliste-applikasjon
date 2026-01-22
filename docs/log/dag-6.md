@@ -8,3 +8,6 @@ Sette opp API dokumentasjon med Swagger UI
 
 10:15 - 10:45
 Rydding av kode
+
+10:45 - 11:45
+Legge til bedre feilmeldinger for brukere of ekstra informasjon dersom man ikke er logget inn eller har noe i listene ennå

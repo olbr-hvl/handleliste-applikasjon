@@ -12,6 +12,13 @@
         <button type="button" id="signup-button" data-dialog-open="signup-dialog" hidden>Registrer</button>
         <dialog closedby="any" id="signup-dialog">
             <form id="signup-form" action="/src/api/authentication/signup.php" method="post">
+                <div class="form-error" role="alert" hidden>
+                    <p>
+                        Det oppstod et problem
+                        <br>
+                        <span class="form-error-message"></span>
+                    </p>
+                </div>
                 <label>
                     E-post
                     <input type="email" required name="email">
@@ -29,6 +36,13 @@
         <button type="button" id="login-button" data-dialog-open="login-dialog" hidden>Logg inn</button>
         <dialog closedby="any" id="login-dialog">
             <form id="login-form" action="/src/api/authentication/login.php" method="post">
+                <div class="form-error" role="alert" hidden>
+                    <p>
+                        Det oppstod et problem
+                        <br>
+                        <span class="form-error-message"></span>
+                    </p>
+                </div>
                 <label>
                     E-post
                     <input type="email" required name="email">
@@ -47,10 +61,19 @@
         <button type="button" id="edit-mode-button" hidden>Rediger</button>
     </header>
     <main>
+        <p id="login-message" class="main-message" hidden>Du må registrere en ny bruker eller logge inn for å se eller redigere handlelister.</p>
+        <p id="no-shopping-lists-message" class="main-message" hidden>Du har ingen handlelister.<br>Opprett en ny handleliste.<br><span aria-hidden="true">↓</span></p>
         <ul id="shopping-lists-ul"></ul>
         <button type="button" id="new-shopping-list-button" data-dialog-open="new-shopping-list-dialog" class="full-width-button" hidden>Ny handleliste</button>
         <dialog closedby="any" id="new-shopping-list-dialog">
             <form id="new-shopping-list-form" action="/src/api/shopping-list/index.php" method="post">
+                <div class="form-error" role="alert" hidden>
+                    <p>
+                        Det oppstod et problem
+                        <br>
+                        <span class="form-error-message"></span>
+                    </p>
+                </div>
                 <label>
                     Handleliste navn
                     <input type="text" required name="name">

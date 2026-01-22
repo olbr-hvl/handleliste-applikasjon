@@ -12,11 +12,19 @@
         <button type="button" id="edit-mode-button">Rediger</button>
     </header>
     <main>
+        <p id="no-shopping-list-items-message" class="main-message" hidden>Du har ikke lagt til noen varer.<br>Legg til en ny vare.<br><span aria-hidden="true">↓</span></p>
         <ul id="shopping-list-items-ul"></ul>
         <button type="button" id="remove-bought-button" class="full-width-button" hidden>Fjern markering</button>
         <button type="button" id="add-shopping-list-item-button" data-dialog-open="add-shopping-list-item-dialog" class="full-width-button">Legg til vare</button>
         <dialog closedby="any" id="add-shopping-list-item-dialog">
             <form id="add-shopping-list-item-form" method="post">
+                <div class="form-error" role="alert" hidden>
+                    <p>
+                        Det oppstod et problem
+                        <br>
+                        <span class="form-error-message"></span>
+                    </p>
+                </div>
                 <label>
                     Vare navn
                     <input type="text" required name="name">

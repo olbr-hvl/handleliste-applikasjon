@@ -1,3 +1,4 @@
+const noShoppingListItemsMessage = document.getElementById('no-shopping-list-items-message')
 const shoppingListItemsUl = document.getElementById('shopping-list-items-ul')
 const signoutButton = document.getElementById('signout-button')
 const editModeButton = document.getElementById('edit-mode-button')
@@ -197,6 +198,7 @@ function addShoppinglistItemToUI(shoppingListItem) {
             li.remove()
 
             updateRemoveBoughtButtonVisibility()
+            updateNoShoppingListItemsMessage()
         }
     })
 
@@ -210,6 +212,7 @@ function addShoppinglistItemToUI(shoppingListItem) {
     shoppingListItemsUl.append(li)
 
     updateRemoveBoughtButtonVisibility()
+    updateNoShoppingListItemsMessage()
 }
 
 async function fetchShoppingList() {
@@ -250,16 +253,19 @@ async function fetchShoppingListItems() {
 
     const shoppingListItems = result.data
 
-    if (shoppingListItems.length === 0) {
+    updateNoShoppingListItemsMessage()
 
-        return
-    }
+    if (shoppingListItems.length === 0) {return}
 
     shoppingListItemsUl.innerHTML = '';
     shoppingListItems.forEach(addShoppinglistItemToUI)
 }
 
 fetchShoppingList().then(fetchShoppingListItems)
+
+function updateNoShoppingListItemsMessage() {
+    noShoppingListItemsMessage.hidden = shoppingListItemsUl.childElementCount !== 0
+}
 
 function updateRemoveBoughtButtonVisibility() {
     removeBoughtButton.hidden = !shoppingListItemsUl.querySelector('li .name-checkbox:checked')
@@ -293,8 +299,17 @@ removeBoughtButton.addEventListener('click', () => {
     })
 })
 
+function handleFormError(form, result) {
+    const formErrorMessage = form.querySelector('.form-error-message')
+
+    formErrorMessage.hidden = result.success
+    formErrorMessage.textContent = !result.success ? result.error : ''
+}
+
 addShoppinglistItemForm.addEventListener('submit', async event => {
     const {result, formData} = await submitFormWithJson(event)
+
+    handleFormError(event.target, result)
 
     if (result.success) {
         event.target.closest('dialog').close()
