@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Data validation
 
-    if (getMissingKeys($data, ['email', 'password'])) {
+    if (!is_array($data) || getMissingKeys($data, ['email', 'password'])) {
         http_response_code(400);
         exit(json_encode(['success' => false, 'error' => 'Manglende data.']));
     }

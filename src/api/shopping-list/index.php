@@ -36,11 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         SQL);
         $statement->execute([$shoppingListId]);
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-    
-        if ($result === false) {
-            http_response_code(404);
-            exit(json_encode(['success' => false, 'error' => 'Fant ikke handlelisten.']));
-        }
 
         // Response
     
@@ -76,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Data validation
 
-    if (getMissingKeys($data, ['name'])) {
+    if (!is_array($data) || getMissingKeys($data, ['name'])) {
         http_response_code(400);
         exit(json_encode(['success' => false, 'error' => 'Manglende data.']));
     }
@@ -122,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] === "PATCH") {
 
     $data = getRequestBodyJson();
 
-    if (getMissingKeys($data, ['name'])) {
+    if (!is_array($data) || getMissingKeys($data, ['name'])) {
         http_response_code(400);
         exit(json_encode(['success' => false, 'error' => 'Manglende data.']));
     }

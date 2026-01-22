@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Data validation
 
-    if (getMissingKeys($data, ['name'])) {
+    if (!is_array($data) || getMissingKeys($data, ['name'])) {
         http_response_code(400);
         exit(json_encode(['success' => false, 'error' => 'Manglende data.']));
     }
@@ -120,6 +120,11 @@ if ($_SERVER["REQUEST_METHOD"] === "PATCH") {
     // Data validation
 
     $data = getRequestBodyJson();
+
+    if (!is_array($data)) {
+        http_response_code(400);
+        exit(json_encode(['success' => false, 'error' => 'Manglende data.']));
+    }
 
     $editableKeys = ['name', 'bought'];
     $editableData = array_intersect_key($data, array_flip($editableKeys));
