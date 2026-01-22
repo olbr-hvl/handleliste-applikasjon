@@ -3,8 +3,8 @@ const shoppingListItemsUl = document.getElementById('shopping-list-items-ul')
 const signoutButton = document.getElementById('signout-button')
 const editModeButton = document.getElementById('edit-mode-button')
 const removeBoughtButton = document.getElementById('remove-bought-button')
-const addShoppinglistItemButton = document.getElementById('add-shopping-list-item-button')
-const addShoppinglistItemForm = document.getElementById('add-shopping-list-item-form')
+const addShoppingListItemButton = document.getElementById('add-shopping-list-item-button')
+const addShoppingListItemForm = document.getElementById('add-shopping-list-item-form')
 
 const windowSearchParams = new URLSearchParams(window.location.search)
 const shoppingListId = windowSearchParams.get('id')
@@ -43,7 +43,35 @@ function handleNotLoggedIn() {
     window.location.href = '/public/index.html'
 }
 
-function addShoppinglistItemToUI(shoppingListItem) {
+async function moveShoppingListItem(from, to) {
+    const ids = [...shoppingListItemsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
+
+    const [shoppingListItem] = ids.splice(from, 1)
+    ids.splice(to, 0, shoppingListItem)
+
+    const response = await fetch(`/src/api/shopping-list/item/order/index.php`, {
+        method: 'PATCH',
+        body: JSON.stringify(ids)
+    })
+
+    const result = await response.json()
+
+    if (result.success) {
+        const lis = []
+
+        ids.forEach(id => {
+            const li = shoppingListItemsUl.querySelector(`li[data-id="${id}"]`)
+
+            if (li) {
+                lis.push(li)
+            }
+        })
+
+        shoppingListItemsUl.prepend(...lis)
+    }
+}
+
+function addShoppingListItemToUI(shoppingListItem) {
     const li = document.createElement('li')
     li.dataset.id = shoppingListItem.id
 
@@ -126,23 +154,11 @@ function addShoppinglistItemToUI(shoppingListItem) {
     moveUpButton.append(moveUpButtonIcon)
 
     moveUpButton.addEventListener('click', async () => {
-        const ids = [...shoppingListItemsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
-        const indexOfId = ids.indexOf(shoppingListItem.id)
+        const liIndex = [...shoppingListItemsUl.children].indexOf(li)
 
-        if (indexOfId === -1 || indexOfId === 0) {return}
+        if (liIndex === -1 || liIndex === 0) {return}
 
-        ;[ids[indexOfId], ids[indexOfId - 1]] = [ids[indexOfId - 1], ids[indexOfId]]
-
-        const response = await fetch(`/src/api/shopping-list/item/order/index.php`, {
-            method: 'PATCH',
-            body: JSON.stringify(ids)
-        })
-
-        const result = await response.json()
-
-        if (result.success) {
-            li.previousElementSibling.before(li)
-        }
+        moveShoppingListItem(liIndex, liIndex - 1)
     })
 
     const moveDownButton = document.createElement('button')
@@ -157,23 +173,11 @@ function addShoppinglistItemToUI(shoppingListItem) {
     moveDownButton.append(moveDownButtonIcon)
 
     moveDownButton.addEventListener('click', async () => {
-        const ids = [...shoppingListItemsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
-        const indexOfId = ids.indexOf(shoppingListItem.id)
+        const liIndex = [...shoppingListItemsUl.children].indexOf(li)
 
-        if (indexOfId === -1 || indexOfId === ids.length - 1) {return}
+        if (liIndex === -1 || liIndex === shoppingListItemsUl.childElementCount - 1) {return}
 
-        ;[ids[indexOfId], ids[indexOfId + 1]] = [ids[indexOfId + 1], ids[indexOfId]]
-
-        const response = await fetch(`/src/api/shopping-list/item/order/index.php`, {
-            method: 'PATCH',
-            body: JSON.stringify(ids)
-        })
-
-        const result = await response.json()
-
-        if (result.success) {
-            li.nextElementSibling.after(li)
-        }
+        moveShoppingListItem(liIndex, liIndex + 1)
     })
 
     const deleteButton = document.createElement('button')
@@ -235,7 +239,7 @@ async function fetchShoppingList() {
     })
 
     document.title = shoppingListName
-    addShoppinglistItemForm.action = `/src/api/shopping-list/item/index.php?${searchParams}`
+    addShoppingListItemForm.action = `/src/api/shopping-list/item/index.php?${searchParams}`
 }
 
 async function fetchShoppingListItems() {
@@ -258,7 +262,7 @@ async function fetchShoppingListItems() {
     if (shoppingListItems.length === 0) {return}
 
     shoppingListItemsUl.innerHTML = '';
-    shoppingListItems.forEach(addShoppinglistItemToUI)
+    shoppingListItems.forEach(addShoppingListItemToUI)
 }
 
 fetchShoppingList().then(fetchShoppingListItems)
@@ -306,7 +310,7 @@ function handleFormError(form, result) {
     formErrorMessage.textContent = !result.success ? result.error : ''
 }
 
-addShoppinglistItemForm.addEventListener('submit', async event => {
+addShoppingListItemForm.addEventListener('submit', async event => {
     const {result, formData} = await submitFormWithJson(event)
 
     handleFormError(event.target, result)
@@ -315,7 +319,7 @@ addShoppinglistItemForm.addEventListener('submit', async event => {
         event.target.closest('dialog').close()
         event.target.reset()
 
-        addShoppinglistItemToUI({
+        addShoppingListItemToUI({
             id: result.data.id,
             name: formData.name,
             bought: false,
@@ -358,6 +362,7 @@ let editModeActive = false
 
 function updateEditModeVisibility(target) {
     shoppingListItemsUl.classList.toggle('edit-mode', editModeActive)
+    editModeButton.textContent = editModeActive ? 'Ferdig' : 'Rediger'
 
     target.querySelectorAll('.edit-mode-active').forEach(element => {
         element.hidden = !editModeActive

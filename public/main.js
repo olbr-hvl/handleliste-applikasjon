@@ -57,10 +57,37 @@ function handleNotLoggedIn() {
     editModeButton.hidden = true
     loginMessage.hidden = false
     shoppingListsUl.innerHTML = '';
-    
 }
 
-function addShoppinglistToUI(shoppingList) {
+async function moveShoppingList(from, to) {
+    const ids = [...shoppingListsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
+
+    const [shoppingList] = ids.splice(from, 1)
+    ids.splice(to, 0, shoppingList)
+
+    const response = await fetch(`/src/api/shopping-list/order/index.php`, {
+        method: 'PATCH',
+        body: JSON.stringify(ids)
+    })
+
+    const result = await response.json()
+
+    if (result.success) {
+        const lis = []
+
+        ids.forEach(id => {
+            const li = shoppingListsUl.querySelector(`li[data-id="${id}"]`)
+
+            if (li) {
+                lis.push(li)
+            }
+        })
+
+        shoppingListsUl.prepend(...lis)
+    }
+}
+
+function addShoppingListToUI(shoppingList) {
     const li = document.createElement('li')
     li.dataset.id = shoppingList.id
 
@@ -113,23 +140,11 @@ function addShoppinglistToUI(shoppingList) {
     moveUpButton.append(moveUpButtonIcon)
 
     moveUpButton.addEventListener('click', async () => {
-        const ids = [...shoppingListsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
-        const indexOfId = ids.indexOf(shoppingList.id)
+        const liIndex = [...shoppingListsUl.children].indexOf(li)
 
-        if (indexOfId === -1 || indexOfId === 0) {return}
+        if (liIndex === -1 || liIndex === 0) {return}
 
-        ;[ids[indexOfId], ids[indexOfId - 1]] = [ids[indexOfId - 1], ids[indexOfId]]
-
-        const response = await fetch(`/src/api/shopping-list/order/index.php`, {
-            method: 'PATCH',
-            body: JSON.stringify(ids)
-        })
-
-        const result = await response.json()
-
-        if (result.success) {
-            li.previousElementSibling.before(li)
-        }
+        moveShoppingList(liIndex, liIndex - 1)
     })
 
     const moveDownButton = document.createElement('button')
@@ -144,23 +159,11 @@ function addShoppinglistToUI(shoppingList) {
     moveDownButton.append(moveDownButtonIcon)
 
     moveDownButton.addEventListener('click', async () => {
-        const ids = [...shoppingListsUl.querySelectorAll('li')].map(li => Number(li.dataset.id))
-        const indexOfId = ids.indexOf(shoppingList.id)
+        const liIndex = [...shoppingListsUl.children].indexOf(li)
 
-        if (indexOfId === -1 || indexOfId === ids.length - 1) {return}
+        if (liIndex === -1 || liIndex === shoppingListsUl.childElementCount - 1) {return}
 
-        ;[ids[indexOfId], ids[indexOfId + 1]] = [ids[indexOfId + 1], ids[indexOfId]]
-
-        const response = await fetch(`/src/api/shopping-list/order/index.php`, {
-            method: 'PATCH',
-            body: JSON.stringify(ids)
-        })
-
-        const result = await response.json()
-
-        if (result.success) {
-            li.nextElementSibling.after(li)
-        }
+        moveShoppingList(liIndex, liIndex + 1)
     })
 
     const deleteButton = document.createElement('button')
@@ -218,7 +221,7 @@ async function fetchShoppingLists() {
     if (shoppingLists.length === 0) {return}
 
     shoppingListsUl.innerHTML = '';
-    shoppingLists.forEach(addShoppinglistToUI)
+    shoppingLists.forEach(addShoppingListToUI)
 }
 
 fetchShoppingLists()
@@ -244,7 +247,7 @@ newShoppingListForm.addEventListener('submit', async event => {
         event.target.closest('dialog').close()
         event.target.reset()
 
-        addShoppinglistToUI({
+        addShoppingListToUI({
             id: result.data.id,
             name: formData.name,
         })
@@ -312,6 +315,7 @@ let editModeActive = false
 
 function updateEditModeVisibility(target) {
     shoppingListsUl.classList.toggle('edit-mode', editModeActive)
+    editModeButton.textContent = editModeActive ? 'Ferdig' : 'Rediger'
 
     target.querySelectorAll('.edit-mode-active').forEach(element => {
         element.hidden = !editModeActive
