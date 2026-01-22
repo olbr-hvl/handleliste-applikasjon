@@ -13,4 +13,10 @@ Teste selv og gjennomføring av test
 Lunsjpause
 
 12:00 - 13:00
-Dokumentere
+Dokumentere test og starte på brukerveiledning
+
+13:00 - 14:00
+Gå hjem til hjemmekontor, finne meg mat og gjøre meg klar til å fortsette arbeidet
+
+14:00 - 16:30
+Dokumentere test, brukerveiledning, og starte på systemdokumentasjonen

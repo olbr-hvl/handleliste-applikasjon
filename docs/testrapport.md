@@ -2,6 +2,8 @@
 
 ## Endringer gjort i applikasjonen ved brukertesting
 
+Jeg måtte endre litt på URL-ene i koden for at de skulle stemme overens med hvor jeg la applikasjonen på webserveren som jeg testet med.
+
 Jeg la til en startside for brukertestere med hva jeg ønsker de å teste:
 
 > Velkommen til brukertesting av handleliste applikasjon  
@@ -47,8 +49,22 @@ Det er kanskje ikke intuitivt nok at endringene i redigeringsmodus lagres automa
 Forslag fra brukeren er at "Rediger"-knappen endrer tekst til "Ferdig" slik at den er mer intuitiv å trykke på.
 Jeg tror heller ikke det er så farlig siden brukeren vil etter vært innse hva som skjer etter litt prøving og feiling i starten.
 
+> Jeg finner ikke ut hvordan jeg sletter varer.
+
+På mobilen til denne personen tok navne redigerings feltet og knappene så mye plass at slette knappen forårsaket overflow, personen fant ikke ut at det var mulig å horisontalt rulle.
+Jeg la tidligere til `overflow-x: auto;` på `<li>`-elementene for at de skulle håndtere lange navn og være mulige å rulle horisontalt, dette gjorde det mulig å rulle horisontalt for å finne slette knappen men det er ikke intuitivt nok.
+Enten må `min-width` på navne redigerings feltet settes lavere slik at det er mindre sjanse for overflow eller så kan `flex-wrap: wrap` settes for at knappene heller skal komme på neste linje, men dette forårsaker at det er ulike høyder på `<li>`-elementene i redigeringsmodus og ikke så det måtte eventuelt fikses også.
+
+> I firefox hvis man har mange varer i handlelisten slik at det er overflow så overflower hele siden også
+
+Det er ikke ideelt at hele siden blir scrollbar og ikke bare handlelisten, må undersøkes nærmere.
+
 ## Tilbakemeldinger
 
 > Man bør komme inn i handlelisten automatisk etter den har blitt opprettet.
 
 Jeg er enig med at man bør navigeres inn i handlelisten automatisk etter at den har blitt opprettet, det er sjeldent noen trenger å bli værende på oversikt over handlelister siden for å lage flere handlelister på en gang og det er sikkert bedre å komme raskere i gang med å legge til varer i handlelisten.
+
+> Man bør kunne se om en vare er handlet i redigeringsmodus dersom man vil slette en handlet vare.
+
+Det er mulig å legge til `text-decoration: line-through;` på navne redigeringsfeltet for å markere om varen er handlet eller ikke. Det må først undersøkes nærmere om denne stilen kommer til hinder for den originale funksjonen til feltet, altså om linjen gjennom navne redigeringsfeltet kan komme til hinder når man skal endre navnet på en handlet vare.
